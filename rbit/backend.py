@@ -40,6 +40,8 @@ def create_tables():
 
     Creates all tables in database.
     '''
+    if _engine is None:
+        init()
     metadata = Base.metadata
     metadata.bind = _engine
     metadata.create_all()
