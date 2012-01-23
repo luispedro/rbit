@@ -15,10 +15,10 @@ class IMAPClient(object):
 
     def list_messages(self, folder):
         self._select_folder(folder)
-        return self.search()
+        return self.connection.search()
 
     def retrieve(self, folder, message):
         self._select_folder(folder)
-        return self.fetch(message, ['RFC822'])
+        return self.connection.fetch(message, ['RFC822'])
 
 
