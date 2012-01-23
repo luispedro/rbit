@@ -1,7 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
-from sqlalchemy import Column, String, Integer, ForeignKey, Text
+from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -10,9 +10,29 @@ class Message(Base):
     __tablename__ = 'message'
 
     mid = Column(Integer, primary_key=True)
-    body = Column(String)
+    from_ = Column(String)
+    to = Column(String)
+    cc = Column(String)
+    bcc = Column(String)
+    date = Column(DateTime)
     subject = Column(String)
-    recipients = Column(String)
+    body = Column(String)
+
+    @staticmethod
+    def from_email_message(m):
+        from email.utils import parsedate
+        from time import mktime
+        from datetime import datetime
+        # I feel there should be an easier way, but I have not found it
+        date = datetime.fromtimestamp(mktime(parsedate(m['Date'])))
+        return Message(
+                    from_=m['From'],
+                    subject=m['Subject'],
+                    body=m.get_payload(),
+                    date=date,
+                    to=m.get('To',''),
+                    cc=m.get('CC', ''),
+                    bcc=m.get('BCC', ''))
 
 class Folder(Base):
     __tablename__ = 'folder'
