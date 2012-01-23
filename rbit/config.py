@@ -6,11 +6,10 @@ from sqlalchemy import Column, String, Integer, Text
 from sqlalchemy.ext.declarative import declarative_base
 import cPickle as pickle
 
+from models import Base
 __all__ = [
     'Config',
     ]
-
-Base = declarative_base()
 
 class ConfigEntry(Base):
     __tablename__ = 'config_entry'
