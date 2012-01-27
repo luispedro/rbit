@@ -3,8 +3,15 @@
 
 from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relation, backref
 
 Base = declarative_base()
+
+class Attachment(Base):
+    __tablename__ = 'message_attachment'
+    id = Column(Integer, primary_key=True)
+    mid = Column(Integer, ForeignKey('message.mid'), index=True)
+    filename = Column(String)
 
 class Message(Base):
     __tablename__ = 'message'
@@ -18,11 +25,14 @@ class Message(Base):
     subject = Column(String)
     body = Column(String)
 
+    attachments = relation(Attachment)
+
     @staticmethod
     def from_email_message(m):
         from email.utils import parsedate
         from time import mktime
         from datetime import datetime
+
         # I feel there should be an easier way, but I have not found it
         date = datetime.fromtimestamp(mktime(parsedate(m['Date'])))
         return Message(
