@@ -17,17 +17,26 @@ session = backend.create_session()
 q = session.query(models.Message).all()
 
 text_header = 'Messages in INBOX'
-blank = urwid.Divider()
+blank = urwid.Divider('=', bottom=1)
 listbox_content = []
 for message in q:
-    summary = "%s: %s\n%s" % (message.from_, message.subject, " ".join(message.body.split()[:32]))
-    listbox_content.extend([urwid.Text(summary), blank])
+    first_words = " ".join(message.body.split()[:32]) + "..."
+    text = urwid.Text([
+        ('bold_underline', message.from_),
+        " ",
+        ('bold', message.subject or "<no subject>"),
+        " ",
+        first_words])
+    listbox_content.extend([text, blank])
+
 header = urwid.AttrWrap(urwid.Text(text_header), 'header')
 listbox = urwid.ListBox(urwid.SimpleListWalker(listbox_content))
 frame = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
 palette = [
         ('body','black','light gray', 'standout'),
         ('header','white','dark red', 'bold'),
+        ('bold','black,bold','light gray', 'bold'),
+        ('bold_underline','black,bold,underline','light gray', 'bold,underline'),
         ]
 screen = urwid.raw_display.Screen()
 
