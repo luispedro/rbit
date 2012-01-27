@@ -11,8 +11,8 @@ from models import Base
 _engine = None
 _create_session = None
 _paths = [
-    path.join(path.abspath(path.dirname(__file__)), '..'),
     '.',
+    path.join(path.abspath(path.dirname(__file__)), '..'),
     ]
 
 def init(database_file=None):
