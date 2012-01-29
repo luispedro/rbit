@@ -16,7 +16,18 @@ backend.init()
 session = backend.create_session()
 q = session.query(models.Message).all()
 
-class SelectableText(urwid.Text):
+class Message(urwid.Text):
+    def __init__(self, message):
+        self.message = message
+
+        first_words = " ".join(message.body.split()[:64]) + "..."
+        super(Message, self).__init__([
+            ('bold_underline', message.from_),
+            " ",
+            ('bold', message.subject or "<no subject>"),
+            " ",
+            first_words])
+
     def selectable(self):
         return True
 
@@ -27,7 +38,7 @@ class FolderView(urwid.Pile):
     def __init__(self, messages):
         self.messages = messages.get_body()
         self.main = urwid.Text("If you read this, there is a bug. list.py:62")
-        super(FolderView, self).__init__([('fixed', 32, messages), urwid.Filler(self.main)])
+        super(FolderView, self).__init__([('fixed', 16, messages), urwid.Filler(self.main)])
         self._set_text()
 
     def keypress(self, size, key):
@@ -37,24 +48,17 @@ class FolderView(urwid.Pile):
 
     def _set_text(self):
         infocus,_idx = self.messages.get_focus()
-        text = infocus.get_text()
-        text = text[0]
+        text = infocus.message.body
         self.main.set_text(text)
         return None
 
 
 def list_messages(folder):
     text_header = 'Messages in %s' % folder
-    blank = urwid.Divider('=', bottom=1)
+    blank = urwid.Divider('=', bottom=0)
     listbox_content = []
     for message in q:
-        first_words = " ".join(message.body.split()[:32]) + "..."
-        text = SelectableText([
-            ('bold_underline', message.from_),
-            " ",
-            ('bold', message.subject or "<no subject>"),
-            " ",
-            first_words])
+        text = Message(message)
         text = urwid.AttrWrap(text, None, 'in-focus')
         listbox_content.extend([text, blank])
 
