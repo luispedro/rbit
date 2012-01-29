@@ -23,6 +23,26 @@ class SelectableText(urwid.Text):
     def keypress(self, size, key):
         return key
 
+class FolderView(urwid.Pile):
+    def __init__(self, messages):
+        self.messages = messages.get_body()
+        self.main = urwid.Text("If you read this, there is a bug. list.py:62")
+        super(FolderView, self).__init__([('fixed', 32, messages), urwid.Filler(self.main)])
+        self._set_text()
+
+    def keypress(self, size, key):
+        if key != 'enter':
+            return super(FolderView, self).keypress(size, key)
+        self._set_text()
+
+    def _set_text(self):
+        infocus,_idx = self.messages.get_focus()
+        text = infocus.get_text()
+        text = text[0]
+        self.main.set_text(text)
+        return None
+
+
 def list_messages(folder):
     text_header = 'Messages in %s' % folder
     blank = urwid.Divider('=', bottom=1)
@@ -41,10 +61,10 @@ def list_messages(folder):
     header = urwid.Text(text_header)
     header = urwid.AttrWrap(header, 'header')
     listbox = urwid.ListBox(urwid.SimpleListWalker(listbox_content))
-    frame = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
+    frame = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header, footer=urwid.AttrMap(urwid.Divider('~'), 'header'))
     return frame
 
-def unhandled(key):
+def quit_on_q(key):
     if key in ('q','Q'):
         raise urwid.ExitMainLoop()
 
@@ -55,8 +75,10 @@ palette = [
         ('bold_underline','black,bold,underline','white', 'bold,underline'),
         ('in-focus', 'white', 'dark blue'),
         ]
-frame = list_messages('INBOX')
+
+messages = list_messages('INBOX')
+top = FolderView(messages)
 screen = urwid.raw_display.Screen()
 
-urwid.MainLoop(frame, palette, screen, unhandled_input=unhandled).run()
+urwid.MainLoop(top, palette, screen, unhandled_input=quit_on_q).run()
 
