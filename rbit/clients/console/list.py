@@ -16,21 +16,30 @@ backend.init()
 session = backend.create_session()
 q = session.query(models.Message).all()
 
+class SelectableText(urwid.Text):
+    def selectable(self):
+        return True
+
+    def keypress(self, size, key):
+        return key
+
 def list_messages(folder):
     text_header = 'Messages in %s' % folder
     blank = urwid.Divider('=', bottom=1)
     listbox_content = []
     for message in q:
         first_words = " ".join(message.body.split()[:32]) + "..."
-        text = urwid.Text([
+        text = SelectableText([
             ('bold_underline', message.from_),
             " ",
             ('bold', message.subject or "<no subject>"),
             " ",
             first_words])
+        text = urwid.AttrWrap(text, None, 'in-focus')
         listbox_content.extend([text, blank])
 
-    header = urwid.AttrWrap(urwid.Text(text_header), 'header')
+    header = urwid.Text(text_header)
+    header = urwid.AttrWrap(header, 'header')
     listbox = urwid.ListBox(urwid.SimpleListWalker(listbox_content))
     frame = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
     return frame
@@ -44,6 +53,7 @@ palette = [
         ('header','white','dark red', 'bold'),
         ('bold','black,bold','white', 'bold'),
         ('bold_underline','black,bold,underline','white', 'bold,underline'),
+        ('in-focus', 'white', 'dark blue'),
         ]
 frame = list_messages('INBOX')
 screen = urwid.raw_display.Screen()
