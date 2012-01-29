@@ -1,6 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 import email
+from rbit import models
 
 _basedir = 'attachments'
 def save_attachment(folder, mid, m):
@@ -32,24 +33,33 @@ def save_attachment(folder, mid, m):
         base64.decode(StringIO(m.get_payload()), output)
     return filename
 
-def message_to_model(client, folder, mid):
+def message_to_model(client, folder, uid):
     '''
-    message = retrieve_model(client, folder, mid)
+    message = retrieve_model(client, folder, uid)
 
     Retrieves message as models.Message
+
+    Parameters
+    ----------
+    client : imap.Client
+    folder : str
+    uid : int
+        IMAP UID
+    folderm : models.Folder, optional
     '''
-    m = client.retrieve(folder, mid)
-    m = email.message_from_string(m[mid]['RFC822'])
-    m = models.Message.from_email_message(m)
-    if isinstance(m.body, list):
-        for inner in m.body:
-            text = get_text(inner)
-            if text is not None:
-                m.body = text
-            else:
-                f = save_attachment(folder, mid, inner)
-                att = models.Attachment(mid=m,filename=f)
-    return m
+    m = client.retrieve(folder, uid)
+    m = email.message_from_string(m[uid]['RFC822'])
+    model = models.Message.from_email_message(m, uid)
+    model.folder = folder
+    for inner in m.walk():
+        text = get_text(inner)
+        if text is not None:
+            model.body = text
+        else:
+            if inner.get_filename() is not None:
+                f = save_attachment(folder, uid, inner)
+                att = models.Attachment(mid=model,filename=f)
+    return model
 
 def get_text(m):
     '''
@@ -73,3 +83,11 @@ def get_text(m):
                 return t
     return None
 
+def download_folder(client, folder, create_session):
+    session = create_session()
+    messages = client.list_messages(folder)
+    for mid in messages:
+        m = message_to_model(client, folder, mid)
+        session.add(m)
+        session.commit()
+    return len(messages)

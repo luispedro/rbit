@@ -17,6 +17,9 @@ class Message(Base):
     __tablename__ = 'message'
 
     mid = Column(Integer, primary_key=True)
+    uid = Column(Integer, index=True)
+    folder = Column(String, index=True)
+
     from_ = Column(String)
     to = Column(String)
     cc = Column(String)
@@ -28,7 +31,22 @@ class Message(Base):
     attachments = relation(Attachment)
 
     @staticmethod
-    def from_email_message(m):
+    def from_email_message(m, uid):
+        '''
+        message = from_email_message(m, uid)
+
+        Parameters
+        ----------
+        m : email.Message
+            The message
+        uid : int
+            The IMAP UID
+
+        Returns
+        -------
+        message : rbit.models.Message
+        '''
+
         from email.utils import parsedate
         from time import mktime
         from datetime import datetime
@@ -37,21 +55,22 @@ class Message(Base):
         date = datetime.fromtimestamp(mktime(parsedate(m['Date'])))
         return Message(
                     from_=m['From'],
+                    uid=uid,
                     subject=m['Subject'],
-                    body=m.get_payload(),
                     date=date,
                     to=m.get('To',''),
                     cc=m.get('CC', ''),
                     bcc=m.get('BCC', ''))
 
+    def __unicode__(self):
+        return u'Message(%s, %s -> %s)' % (self.uid, self.from_, self.to)
+
+    def __str__(self):
+        return str(unicode(self))
+
 class Folder(Base):
     __tablename__ = 'folder'
     fid = Column(Integer, primary_key=True)
     name = Column(String(64), index=True)
-
-class FolderMessage(Base):
-    __tablename__ = 'folder_message'
-    fid = Column(Integer, ForeignKey('folder.fid'), primary_key=True, index=True)
-    mid = Column(Integer, ForeignKey('message.mid'), primary_key=True, index=True)
 
 
