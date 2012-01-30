@@ -75,7 +75,13 @@ def get_text(m):
         If a text is found, returns it; else, returns None
     '''
     if m.get_content_type() in ('text/plain','text/html'):
-        return m.get_payload()
+        text = m.get_payload(decode=True)
+        for charset in m.get_charsets():
+            try:
+                return unicode(text, charset)
+            except:
+                pass
+        return unicode(text, 'utf-8')
     if m.get_content_type() == 'multipart/alternative':
         for inner in m.get_payload():
             t = get_text(inner)
