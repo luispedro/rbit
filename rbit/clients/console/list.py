@@ -34,9 +34,12 @@ class Message(urwid.Text):
         return key
 
 class FolderView(urwid.Pile):
-    def __init__(self, messages):
+    def __init__(self, folder, messages, header, n):
+        self.folder = folder
         self.messages = messages.get_body()
+        self.header = header
         self.main = urwid.Text("If you read this, there is a bug. list.py:62")
+        self.n = n
         super(FolderView, self).__init__([('fixed', 16, messages), urwid.Filler(self.main)])
         self._set_text()
 
@@ -46,31 +49,33 @@ class FolderView(urwid.Pile):
         self._set_text()
 
     def _set_text(self):
-        infocus,_idx = self.messages.get_focus()
+        infocus,idx = self.messages.get_focus()
+        text_header = 'Messages in %s (%s/%s)' % (self.folder, 1+idx//2, self.n)
+        self.header.set_text(text_header)
+
         text = infocus.message.body
         self.main.set_text(text)
         return None
 
 
 def list_messages(folder):
-    text_header = 'Messages in %s' % folder
-    blank = urwid.Divider('=', bottom=0)
-    listbox_content = []
     q = session\
             .query(models.Message) \
             .filter_by(folder=folder) \
             .order_by(models.Message.date) \
             .all()
+    blank = urwid.Divider('=', bottom=0)
+    listbox_content = []
     for message in q:
         text = Message(message)
         text = urwid.AttrWrap(text, None, 'in-focus')
         listbox_content.extend([text, blank])
 
-    header = urwid.Text(text_header)
+    header = urwid.Text('Message List')
     header = urwid.AttrWrap(header, 'header')
     listbox = urwid.ListBox(urwid.SimpleListWalker(listbox_content))
     frame = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header, footer=urwid.AttrMap(urwid.Divider('~'), 'header'))
-    return frame
+    return FolderView(folder, frame, header, len(q))
 
 def quit_on_q(key):
     if key in ('q','Q'):
@@ -84,8 +89,7 @@ palette = [
         ('in-focus', 'white', 'dark blue'),
         ]
 
-messages = list_messages('INBOX')
-top = FolderView(messages)
+top = list_messages('INBOX')
 screen = urwid.raw_display.Screen()
 
 urwid.MainLoop(top, palette, screen, unhandled_input=quit_on_q).run()
