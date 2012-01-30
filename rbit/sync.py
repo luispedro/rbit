@@ -105,7 +105,23 @@ def update_folder(client, folder, create_session):
         Number of messages added or removed (from local store)
     '''
     session = create_session()
-    messages = set(client.list_messages(folder))
+    status = client.select_folder(folder)
+    uidvalidity = status['UIDVALIDITY']
+
+    folderm = session.query(models.Folder).filter_by(name=folder).first()
+    if folderm is not None and folderm.uidvalidity != uidvalidity:
+        # UIDs are INVALID
+        # We need to clear the cache!
+        session.delete(folderm)
+        q = session.query(models.Message).filter_by(folder=folder).delete()
+        session.commit()
+        folderm = None
+
+    if folderm is None:
+        folderm = models.Folder(name=folder, uidvalidity=uidvalidity)
+        session.add(folderm)
+
+    messages = set(client.list_messages())
     current = set(uid for uid, in
                     session.query(models.Message.uid).filter_by(folder=folder).all())
 

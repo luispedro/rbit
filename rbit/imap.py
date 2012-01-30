@@ -10,10 +10,15 @@ class IMAPClient(object):
         self.folder = None
 
     def _select_folder(self, folder):
+        if folder is None:
+            return
         if self.folder != folder:
-            self.connection.select_folder(folder)
+            return self.connection.select_folder(folder)
 
-    def list_messages(self, folder):
+    def select_folder(self, folder):
+        return self.connection.select_folder(folder)
+
+    def list_messages(self, folder=None):
         self._select_folder(folder)
         return self.connection.search()
 

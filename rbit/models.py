@@ -72,5 +72,6 @@ class Folder(Base):
     __tablename__ = 'folder'
     fid = Column(Integer, primary_key=True)
     name = Column(String(64), index=True)
+    uidvalidity = Column(Integer)
 
 
