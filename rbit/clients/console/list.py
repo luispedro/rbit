@@ -50,11 +50,12 @@ class FolderView(urwid.Pile):
 
     def _set_text(self):
         infocus,idx = self.messages.get_focus()
-        text_header = 'Messages in %s (%s/%s)' % (self.folder, 1+idx//2, self.n)
-        self.header.set_text(text_header)
+        if idx is not None:
+            text_header = 'Messages in %s (%s/%s)' % (self.folder, 1+idx//2, self.n)
+            self.header.set_text(text_header)
 
         text = infocus.message.body
-        self.main.set_text(text)
+        self.main.set_text(text.replace("\r\n","\n"))
         return None
 
 
@@ -89,7 +90,7 @@ palette = [
         ('in-focus', 'white', 'dark blue'),
         ]
 
-top = list_messages('INBOX')
+top = list_messages(u'INBOX')
 screen = urwid.raw_display.Screen()
 
 urwid.MainLoop(top, palette, screen, unhandled_input=quit_on_q).run()
