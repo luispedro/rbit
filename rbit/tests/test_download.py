@@ -3,7 +3,7 @@
 import email
 from os import path
 
-from rbit.download import get_text
+from rbit.sync import get_text
 
 def _open(fname):
     return open(path.join(
@@ -13,6 +13,11 @@ def _open(fname):
 
 def test_latin():
     m = email.message_from_string(_open('latin.eml').read())
+    t = get_text(m)
+    assert type(t) is unicode
+
+def test_signed():
+    m = email.message_from_string(_open('signed.eml').read())
     t = get_text(m)
     assert type(t) is unicode
 

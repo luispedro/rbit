@@ -82,7 +82,7 @@ def get_text(m):
             except:
                 pass
         return unicode(text, 'utf-8')
-    if m.get_content_type() == 'multipart/alternative':
+    if m.get_content_type() in ('multipart/alternative', 'multipart/signed'):
         for inner in m.get_payload():
             t = get_text(inner)
             if t is not None:

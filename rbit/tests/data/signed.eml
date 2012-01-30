@@ -1,0 +1,138 @@
+Return-Path: <pythonvision+bncCLGw18yTGRDz0aDfBBoE100vkA@googlegroups.com>
+X-Original-To: luis@luispedro.org
+Delivered-To: m7743106@spaceymail-mx1.g.dreamhost.com
+Received: from diehard.dreamhost.com (fltr-in2.mail.dreamhost.com [208.97.132.72])
+	by spaceymail-mx1.g.dreamhost.com (Postfix) with ESMTP id 5EA4BCE753
+	for <luis@luispedro.org>; Mon, 10 May 2010 08:40:41 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+	by diehard.dreamhost.com (Postfix) with ESMTP id C08F4A7B95
+	for <luis@luispedro.org>; Mon, 10 May 2010 08:43:48 -0700 (PDT)
+X-DH-Virus-Scanned: Debian amavisd-new at diehard.dreamhost.com
+X-Spam-Score: 0
+X-Spam-Level: 
+X-Spam-Status: No, score=0 tagged_above=-999 required=999 tests=[none]
+Received: from connor.dreamhost.com ([208.97.132.145])
+	by localhost (diehard.dreamhost.com [208.97.132.157]) (amavisd-new, port 10024)
+	with ESMTP id ojVjE8BOTeRn for <luis@luispedro.org>;
+	Mon, 10 May 2010 08:43:48 -0700 (PDT)
+Received: from mail-pw0-f55.google.com (mail-pw0-f55.google.com [209.85.160.55])
+	by connor.dreamhost.com (Postfix) with ESMTP id 76D852C9807E
+	for <luis@luispedro.org>; Mon, 10 May 2010 08:40:40 -0700 (PDT)
+Received: by pwj9 with SMTP id 9sf1125567pwj.10
+        for <luis@luispedro.org>; Mon, 10 May 2010 08:40:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlegroups.com; s=beta;
+        h=domainkey-signature:received:x-beenthere:received:received:received
+         :received:received-spf:received:from:organization:to:subject:date
+         :user-agent:references:in-reply-to:mime-version:content-type
+         :content-transfer-encoding:message-id
+         :x-original-authentication-results:x-original-sender:reply-to
+         :precedence:mailing-list:list-id:list-post:list-help:list-archive
+         :sender:list-subscribe:list-unsubscribe;
+        bh=lTwi97rc1tK7h/vV2JHKkbnuhlTnJcoAapPfEcn2JR8=;
+        b=QTNXUMMFjfERfrgi9znPzd7crQ8xRAWTxGC8Rg67LUIKkTU8a6SLwwlhd1OARed8hA
+         nCDezBpGBs41/s2ohWTq0SQqsBIG4nJF6Dla7sZ2o5FpuHpatbH+JnFl9ddiz2jindZY
+         Zmm3a5t2PsdMi2xYOvQzcHSswWEcm3cdjXZqM=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=googlegroups.com; s=beta;
+        h=x-beenthere:received-spf:from:organization:to:subject:date
+         :user-agent:references:in-reply-to:mime-version:content-type
+         :content-transfer-encoding:message-id
+         :x-original-authentication-results:x-original-sender:reply-to
+         :precedence:mailing-list:list-id:list-post:list-help:list-archive
+         :sender:list-subscribe:list-unsubscribe;
+        b=zGg/ag63ELDY1t/CS/SEiDsJal9WxQ+6fkayXwcSbWoIcLWTmdkReDOwZLOSb4fUWl
+         YIOvULJAYedBh2g8V+wVtwIUs4Fap5YUdALWqbgviTWl7kBbv/vvTd0OI9L+LmCijZtg
+         7RzatQOo8R25dUEP4A/+pkSm7PWtSEn4aW+kI=
+Received: by 10.143.27.30 with SMTP id e30mr197310wfj.40.1273506035699;
+        Mon, 10 May 2010 08:40:35 -0700 (PDT)
+X-BeenThere: pythonvision@googlegroups.com
+Received: by 10.142.250.36 with SMTP id x36ls4367396wfh.2.p; Mon, 10 May 2010 
+	08:40:35 -0700 (PDT)
+Received: by 10.142.3.29 with SMTP id 29mr573635wfc.9.1273506032141;
+        Mon, 10 May 2010 08:40:32 -0700 (PDT)
+Received: by 10.142.3.29 with SMTP id 29mr573634wfc.9.1273506032091;
+        Mon, 10 May 2010 08:40:32 -0700 (PDT)
+Received: from spaceymail-a2.g.dreamhost.com (caibbdcaaaaf.dreamhost.com [208.113.200.5])
+        by gmr-mx.google.com with ESMTP id 19si952318pzk.3.2010.05.10.08.40.31;
+        Mon, 10 May 2010 08:40:31 -0700 (PDT)
+Received-SPF: neutral (google.com: 208.113.200.5 is neither permitted nor denied by best guess record for domain of lpc@cmu.edu) client-ip=208.113.200.5;
+Received: from oakeshott.localnet (OAKESHOTT.COMPBIO.CS.CMU.EDU [128.2.208.69])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by spaceymail-a2.g.dreamhost.com (Postfix) with ESMTP id AEF01EE34E
+	for <pythonvision@googlegroups.com>; Mon, 10 May 2010 08:40:31 -0700 (PDT)
+From: Luis Pedro Coelho <lpc@cmu.edu>
+Organization: Carnegie Mellon University
+To: pythonvision@googlegroups.com
+Subject: Re: Installing Mahotas
+Date: Mon, 10 May 2010 11:40:20 -0400
+User-Agent: KMail/1.13.2 (Linux/2.6.32-21-generic; KDE/4.4.2; i686; ; )
+References: <df4bcb85-09d0-4a14-8c02-a084f52b9701@l28g2000yqd.googlegroups.com>
+In-Reply-To: <df4bcb85-09d0-4a14-8c02-a084f52b9701@l28g2000yqd.googlegroups.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed;
+  boundary="nextPart3582097.Phaa0kzEFU";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
+Content-Transfer-Encoding: 7bit
+Message-Id: <201005101140.25413.lpc@cmu.edu>
+X-Original-Authentication-Results: gmr-mx.google.com; spf=neutral (google.com: 
+	208.113.200.5 is neither permitted nor denied by best guess record for domain 
+	of lpc@cmu.edu) smtp.mail=lpc@cmu.edu
+X-Original-Sender: lcoelho@andrew.cmu.edu
+Reply-To: pythonvision@googlegroups.com
+Precedence: list
+Mailing-list: list pythonvision@googlegroups.com; contact pythonvision+owners@googlegroups.com
+List-ID: <pythonvision.googlegroups.com>
+List-Post: <http://groups.google.com/group/pythonvision/post?hl=en_US>, 
+	<mailto:pythonvision@googlegroups.com>
+List-Help: <http://groups.google.com/support/?hl=en_US>, <mailto:pythonvision+help@googlegroups.com>
+List-Archive: <http://groups.google.com/group/pythonvision?hl=en_US>
+Sender: pythonvision@googlegroups.com
+List-Subscribe: <http://groups.google.com/group/pythonvision/subscribe?hl=en_US>, 
+	<mailto:pythonvision+subscribe@googlegroups.com>
+List-Unsubscribe: <http://groups.google.com/group/pythonvision/subscribe?hl=en_US>, 
+	<mailto:pythonvision+unsubscribe@googlegroups.com>
+
+--nextPart3582097.Phaa0kzEFU
+Content-Type: Text/Plain;
+  charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+On Saturday, May 08, 2010 11:17:41 thomas wrote:
+> Traceback (most recent call last):
+>   File "<stdin>", line 1, in <module>
+>   File "mahotas/__init__.py", line 12
+>     from .morph import *
+> SyntaxError: 'import *' not allowed with 'from .'
+
+Hi Thomas,
+
+Comparing this with the master branch
+
+http://github.com/luispedro/mahotas/blob/master/mahotas/__init__.py
+
+Line 12 does not look like that anymore, so I think you should be able to=20
+upgrade this away. I tested on one machine with Python 2.5.1 and it passed =
+all=20
+unit tests.
+
+HTH
+=2D-=20
+Luis Pedro Coelho | Carnegie Mellon University | http://luispedro.org
+
+
+--nextPart3582097.Phaa0kzEFU
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEABECAAYFAkvoKOUACgkQEQ1smOdgvvJ5PgCfVAdsR4K+0puTpYI1cJ4gKDJc
+KVUAn2jlADgCEqQbEoYs/Y6CxswOuqIe
+=2cjY
+-----END PGP SIGNATURE-----
+
+--nextPart3582097.Phaa0kzEFU--
