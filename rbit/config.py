@@ -45,6 +45,8 @@ class Config(object):
 
     def get(self, group, name):
         e = _config(self.supergroup, group, name, self.session)
+        if e is None:
+            raise KeyError('rbit.Config.get: Unknown key (%s,%s,%s)' % (self.supergroup, group, name))
         return pickle.loads(str(e.value))
 
     def set(self, group, name, value):
