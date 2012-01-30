@@ -14,7 +14,6 @@ from rbit import models
 
 backend.init()
 session = backend.create_session()
-q = session.query(models.Message).all()
 
 class Message(urwid.Text):
     def __init__(self, message):
@@ -57,6 +56,11 @@ def list_messages(folder):
     text_header = 'Messages in %s' % folder
     blank = urwid.Divider('=', bottom=0)
     listbox_content = []
+    q = session\
+            .query(models.Message) \
+            .filter_by(folder=folder) \
+            .order_by(models.Message.date) \
+            .all()
     for message in q:
         text = Message(message)
         text = urwid.AttrWrap(text, None, 'in-focus')
