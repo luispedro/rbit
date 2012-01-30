@@ -89,11 +89,36 @@ def get_text(m):
                 return t
     return None
 
-def download_folder(client, folder, create_session):
+def update_folder(client, folder, create_session):
+    '''
+    nr_changes = update_folder(client, folder, create_session)
+
+    Parameters
+    ----------
+    client : rbit.Client
+    folder : str or unicode
+    create_session : callable
+
+    Returns
+    -------
+    nr_changes : int
+        Number of messages added or removed (from local store)
+    '''
     session = create_session()
-    messages = client.list_messages(folder)
-    for mid in messages:
-        m = message_to_model(client, folder, mid)
+    messages = set(client.list_messages(folder))
+    current = set(uid for uid, in
+                    session.query(models.Message.uid).filter_by(folder=folder).all())
+
+    extra = current - messages
+    for uid in extra:
+        m = session.query(models.Message).filter_by(folder=folder, uid=uid).first()
+        session.delete(m)
+    session.commit()
+
+    new = messages - current
+    for uid in new:
+        m = message_to_model(client, folder, uid)
         session.add(m)
-        session.commit()
-    return len(messages)
+    session.commit()
+
+    return len(extra)+len(new)
