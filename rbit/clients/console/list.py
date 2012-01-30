@@ -6,6 +6,7 @@ import time
 import urwid
 import urwid.raw_display
 import urwid.web_display
+from sys import argv
 
 from rbit import config
 from rbit import backend
@@ -90,7 +91,10 @@ palette = [
         ('in-focus', 'white', 'dark blue'),
         ]
 
-top = list_messages(u'INBOX')
+folder = u'INBOX'
+if len(argv) > 1:
+    folder = argv[1]
+top = list_messages(folder)
 screen = urwid.raw_display.Screen()
 
 urwid.MainLoop(top, palette, screen, unhandled_input=quit_on_q).run()
