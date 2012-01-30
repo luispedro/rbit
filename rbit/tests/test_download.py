@@ -3,7 +3,7 @@
 import email
 from os import path
 
-from rbit.sync import get_text
+from rbit.sync import get_text, message_to_model
 
 def _open(fname):
     return open(path.join(
@@ -20,4 +20,6 @@ def test_signed():
     m = email.message_from_string(_open('signed.eml').read())
     t = get_text(m)
     assert type(t) is unicode
-
+    m = _open('signed.eml').read()
+    model = message_to_model(m, 'folder', 20)
+    assert model.to == 'pythonvision@googlegroups.com'

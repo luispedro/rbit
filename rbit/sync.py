@@ -33,22 +33,22 @@ def save_attachment(folder, mid, m):
         base64.decode(StringIO(m.get_payload()), output)
     return filename
 
-def message_to_model(client, folder, uid):
+def message_to_model(message, folder, uid):
     '''
-    message = retrieve_model(client, folder, uid)
+    message = retrieve_model(message, folder, uid)
 
     Retrieves message as models.Message
 
     Parameters
     ----------
-    client : imap.Client
+    message : str
+        RFC822 representation of message
     folder : str
     uid : int
         IMAP UID
     folderm : models.Folder, optional
     '''
-    m = client.retrieve(folder, uid)
-    m = email.message_from_string(m[uid]['RFC822'])
+    m = email.message_from_string(message)
     model = models.Message.from_email_message(m, uid)
     model.folder = folder
     for inner in m.walk():
@@ -56,7 +56,7 @@ def message_to_model(client, folder, uid):
         if text is not None:
             model.body = text
         else:
-            if inner.get_filename() is not None:
+            if inner.get_filename() is not None and inner.get_content_type() != 'application/pgp-signature':
                 f = save_attachment(folder, uid, inner)
                 att = models.Attachment(mid=model,filename=f)
     return model
@@ -133,7 +133,8 @@ def update_folder(client, folder, create_session):
 
     new = messages - current
     for uid in new:
-        m = message_to_model(client, folder, uid)
+        m = client.retrieve(folder, uid)
+        m = message_to_model(m[uid]['RFC822'], folder, uid)
         session.add(m)
     session.commit()
 
