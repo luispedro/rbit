@@ -81,7 +81,7 @@ def get_text(m):
                 return unicode(text, charset)
             except:
                 pass
-        return unicode(text, 'utf-8')
+        return unicode(text, 'utf-8', 'replace')
     if m.get_content_type() in ('multipart/alternative', 'multipart/signed'):
         for inner in m.get_payload():
             t = get_text(inner)

@@ -23,3 +23,8 @@ def test_signed():
     m = _open('signed.eml').read()
     model = message_to_model(m, 'folder', 20)
     assert model.to == 'pythonvision@googlegroups.com'
+
+def test_unknown_8bit():
+    m = email.message_from_string(_open('unknown.eml').read())
+    t = get_text(m)
+    assert type(t) is unicode
