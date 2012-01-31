@@ -21,8 +21,6 @@ def save_attachment(folder, mid, m):
         The attachment
     '''
     from os import path, mkdir
-    from cStringIO import StringIO
-    from email.utils import base64
     dirname = path.join(_basedir, 'message-%s-%s' % (folder, mid))
     filename = path.join(dirname, m.get_filename())
     try:
@@ -30,7 +28,7 @@ def save_attachment(folder, mid, m):
     except:
         pass
     with open(filename, 'w') as output:
-        base64.decode(StringIO(m.get_payload()), output)
+        output.write(m.get_payload(decode=True))
     return filename
 
 def message_to_model(message, folder, uid):
@@ -82,7 +80,7 @@ def get_text(m):
             except:
                 pass
         return unicode(text, 'utf-8', 'replace')
-    if m.get_content_type() in ('multipart/alternative', 'multipart/signed'):
+    if m.get_content_type() in ('multipart/alternative', 'multipart/mixed', 'multipart/signed'):
         for inner in m.get_payload():
             t = get_text(inner)
             if t is not None:

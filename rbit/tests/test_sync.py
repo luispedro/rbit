@@ -28,3 +28,8 @@ def test_unknown_8bit():
     m = email.message_from_string(_open('unknown.eml').read())
     t = get_text(m)
     assert type(t) is unicode
+
+def test_inline():
+    m = email.message_from_string(_open('inline.eml').read())
+    t = get_text(m)
+    assert type(t) is unicode
