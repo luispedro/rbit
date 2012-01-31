@@ -3,8 +3,7 @@
 import email
 from rbit import models
 
-_basedir = 'attachments'
-def save_attachment(folder, mid, m):
+def save_attachment(folder, mid, m, basedir='attachments'):
     '''
     save_attachment(folder, mid, m)
 
@@ -21,14 +20,17 @@ def save_attachment(folder, mid, m):
         The attachment
     '''
     from os import path, mkdir
-    dirname = path.join(_basedir, 'message-%s-%s' % (folder, mid))
+    dirname = path.join(basedir, 'message-%s-%s' % (folder, mid))
     filename = path.join(dirname, m.get_filename())
     try:
         mkdir(dirname)
     except:
         pass
     with open(filename, 'w') as output:
-        output.write(m.get_payload(decode=True))
+        if m.get_content_type() == 'message/rfc822':
+            output.write(m.as_string())
+        else:
+            output.write(m.get_payload(decode=True))
     return filename
 
 def message_to_model(message, folder, uid):
