@@ -1,8 +1,36 @@
 import QtQuick 1.0
+import QtDesktop 0.1
 
-Rectangle {
+Window {
     width: 1280
     height: 768
+    title: "Rbit Mail"
+    visible: true
+    MenuBar {
+        Menu {
+            text: "File"
+            MenuItem {
+                text: "Open"
+                shortcut: "Ctrl+O"
+            }
+            MenuItem {
+                text: "Close"
+                shortcut: "Ctrl+Q"
+                onTriggered: Qt.quit()
+            }
+        }
+        Menu {
+            text: "Edit"
+            MenuItem {
+                text: "Copy Message"
+            }
+            MenuItem {
+                id: paste_menuitem
+                text: "Paste Message"
+            }
+        }
+    }
+
     Rectangle {
         id: mailboxlist
         width: 256
@@ -16,7 +44,7 @@ Rectangle {
         }
         border {
             width: 2
-            color: Qt.black
+            color: "#ffffff"
         }
 
     }
@@ -62,20 +90,4 @@ Rectangle {
         }
     }
 
-    MouseArea {
-        x: 424
-        y: 37
-        drag.minimumY: -1000
-        drag.minimumX: -1000
-        drag.maximumY: 1000
-        drag.maximumX: 1000
-        anchors.rightMargin: -424
-        anchors.bottomMargin: -37
-        anchors.leftMargin: 424
-        anchors.topMargin: 37
-        anchors.fill: parent
-        onClicked: {
-            Qt.quit();
-        }
-    }
 }
