@@ -74,6 +74,8 @@ def get_text(m):
     text : str or None
         If a text is found, returns it; else, returns None
     '''
+    if isinstance(m, (str,unicode)):
+        return m
     if m.get_content_type() in ('text/plain','text/html'):
         text = m.get_payload(decode=True)
         for charset in m.get_charsets():
