@@ -5,6 +5,8 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relation, backref
 
+from rbit.decode import decode_unicode
+
 Base = declarative_base()
 
 class Attachment(Base):
@@ -51,16 +53,20 @@ class Message(Base):
         from time import mktime
         from datetime import datetime
 
+        def u(t):
+            if t is not None:
+                return decode_unicode(t, m.get_charsets())
+
         # I feel there should be an easier way, but I have not found it
         date = datetime.fromtimestamp(mktime(parsedate(m['Date'])))
         return Message(
-                    from_=m['From'],
+                    from_=u(m['From']),
                     uid=uid,
-                    subject=m['Subject'],
+                    subject=u(m['Subject']),
                     date=date,
-                    to=m.get('To',''),
-                    cc=m.get('CC', ''),
-                    bcc=m.get('BCC', ''))
+                    to=u(m.get('To','')),
+                    cc=u(m.get('CC', '')),
+                    bcc=u(m.get('BCC', '')))
 
     def __unicode__(self):
         return u'Message(%s, %s -> %s)' % (self.uid, self.from_, self.to)

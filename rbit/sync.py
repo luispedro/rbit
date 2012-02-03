@@ -2,6 +2,7 @@
 # This file is part of rbit mail.
 import email
 from rbit import models
+from rbit.decode import decode_unicode
 
 def save_attachment(folder, mid, m, basedir='attachments'):
     '''
@@ -78,12 +79,7 @@ def get_text(m):
         return m
     if m.get_content_type() in ('text/plain','text/html'):
         text = m.get_payload(decode=True)
-        for charset in m.get_charsets():
-            try:
-                return unicode(text, charset)
-            except:
-                pass
-        return unicode(text, 'utf-8', 'replace')
+        return decode_unicode(text, m.get_charsets())
     if m.get_content_type() in ('multipart/alternative', 'multipart/mixed', 'multipart/signed'):
         for inner in m.get_payload():
             t = get_text(inner)

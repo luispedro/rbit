@@ -2,9 +2,9 @@
 # This file is part of rbit mail.
 from nose.tools import with_setup
 import email
-from os import path
 
 from rbit.sync import get_text, message_to_model, save_attachment
+from rbit.tests.tools import _open
 
 _tmp_dir = '/tmp/rbit-tests/'
 
@@ -18,12 +18,6 @@ def _mk_tmp():
 def _rm_tmp():
     from shutil import rmtree
     rmtree(_tmp_dir)
-
-def _open(fname):
-    return open(path.join(
-                path.dirname(path.abspath(__file__)),
-                'data',
-                fname))
 
 def test_latin():
     m = email.message_from_string(_open('latin.eml').read())
