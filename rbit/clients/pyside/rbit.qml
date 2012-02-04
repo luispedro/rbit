@@ -56,19 +56,46 @@ Window {
     }
 
     Rectangle {
-        id: messagelist
+        id: messagelistcontainer
         width: 1024
         height: 256
         anchors { top: parent.top; left: mailboxlist.right }
-        Text {
-            text: "Messages"
+        ListView {
+            id: messagelist
+            objectName: "messagelist"
+            anchors {
+                fill: parent
+                margins: 5
+            }
+
+            model: ListModel {
+                objectName: "ml_model"
+                ListElement {
+                    from: "Me"
+                    recipients: "You"
+                    subject: "About You"
+                    first: "These are the first few lines of a rambling message about you"
+                }
+            }
+            delegate: message_summary
+            Component {
+                id: message_summary
+                Item {
+                    width: 256
+                    height: 48
+                    Row { Column {
+                        Text { text: ("<b><i>"+from+"</i>:: "+subject+"</b>") }
+                        Text { text: first }
+                    } }
+                }
+            }
         }
     }
     Rectangle {
         id: message
         width: 1024
         height: 1280-256
-        anchors { top: messagelist.bottom; left: mailboxlist.right }
+        anchors { top: messagelistcontainer.bottom; left: mailboxlist.right }
         Rectangle {
             id: header
             width: 1024
