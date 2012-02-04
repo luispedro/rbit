@@ -7,7 +7,6 @@ from PySide.QtDeclarative import QDeclarativeComponent, QDeclarativeItem, QDecla
 def main(argv):
     app = QApplication(argv)
     engine = QDeclarativeEngine()
-    root = QDeclarativeItem()
     c = QDeclarativeComponent(engine, 'rbit.qml', app)
     win = c.create()
     win.show()
