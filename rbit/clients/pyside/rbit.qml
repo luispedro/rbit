@@ -29,6 +29,12 @@ Window {
                 text: "Paste Message"
             }
         }
+        Menu {
+            text: "Help"
+            MenuItem {
+                text: "Help"
+            }
+        }
     }
 
     Rectangle {
