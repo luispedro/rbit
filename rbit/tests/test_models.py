@@ -23,3 +23,8 @@ def test_baddate():
     session.add(message_to_model(_open('bad-date.eml').read(), 'test', 128))
     session.commit()
 
+def test_github():
+    session = in_memory_sessionmaker()()
+    session.add(message_to_model(_open('github.eml').read(), 'test', 128))
+    session.commit()
+

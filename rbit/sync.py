@@ -20,11 +20,10 @@ def save_attachment(folder, mid, m, basedir='attachments'):
     m : email.Message
         The attachment
     '''
-    from os import path, mkdir
-    dirname = path.join(basedir, 'message-%s-%s' % (folder, mid))
-    filename = path.join(dirname, m.get_filename())
+    from os import path, makedirs
+    filename = path.join(basedir, 'message-%s-%s' % (folder, mid), m.get_filename())
     try:
-        mkdir(dirname)
+        makedirs(path.dirname(filename))
     except:
         pass
     with open(filename, 'w') as output:

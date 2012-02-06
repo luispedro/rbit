@@ -1,0 +1,70 @@
+Return-Path: <>
+X-Original-To: luis@luispedro.org
+Delivered-To: x11738967@homiemail-mx21.g.dreamhost.com
+Received: from deathwish.dreamhost.com (fltr-in2.mail.dreamhost.com [208.97.132.72])
+	by homiemail-mx21.g.dreamhost.com (Postfix) with ESMTP id 3D2C56D81C8
+	for <luis@luispedro.org>; Fri, 17 Dec 2010 02:05:45 -0800 (PST)
+Received: from deathwish.dreamhost.com (localhost [127.0.0.1])
+	by deathwish.dreamhost.com (Postfix) with ESMTP id 47A9D94040
+	for <luis@luispedro.org>; Fri, 17 Dec 2010 02:05:40 -0800 (PST)
+Received: from smtp1.rs.github.com (smtp1-ext.rs.github.com [207.97.227.250])
+	by deathwish.dreamhost.com (Postfix) with ESMTP id DBEBA940E1
+	for <luis@luispedro.org>; Fri, 17 Dec 2010 02:05:39 -0800 (PST)
+Received: from github.com (aux1.rs.github.com [172.17.1.44])
+	by smtp1.rs.github.com (Postfix) with ESMTPS id 2A59F42382;
+	Fri, 17 Dec 2010 02:05:44 -0800 (PST)
+Date: Fri, 17 Dec 2010 02:05:44 -0800
+From: GitHub <support@github.com>
+To: luis@luispedro.org
+Message-Id: <4d0b35f820a9e_3bcd3fb7d5318af4398a@aux1.rs.github.com.tmail>
+Subject: [GitHub] Payment Receipt
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+  boundary=mimepart_4d0b35f825377_3bcd3fb7d5318af4399de
+X-Length: 26746
+Status: RO
+X-Status: ORT
+X-KMail-EncryptionState: N
+X-KMail-SignatureState: N
+X-KMail-MDN-Sent:  
+X-UID: 0
+
+
+--mimepart_4d0b35f825377_3bcd3fb7d5318af4399de
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+
+Dear luispedro:
+
+This is a receipt for your GitHub subscription. This is only a receipt, no
+payment is due. If you have any questions, please contact us anytime at
+support@github.com. Thank you for your business!
+
+-------------------------------------------------
+GITHUB RECEIPT - 17 Dec 2010 - 02:05AM
+
+User: luispedro
+Plan: Micro
+Amount: USD $7.00*
+
+
+GitHub, Inc.
+589 Howard St.
+San Francisco, CA 94105
+
+* EU customers: prices exclude VAT
+-------------------------------------------------
+
+--mimepart_4d0b35f825377_3bcd3fb7d5318af4399de
+Content-Type: application/pdf; name="luispedro-receipt-12/17/10.pdf"
+Content-Transfer-Encoding: Base64
+Content-Disposition: attachment; filename="luispedro-receipt-12/17/10.pdf"
+
+JVBERi0xLjMK/////woxIDAgb2JqCjw8IC9Qcm9kdWNlciA8ZmVmZjAwNTAw
+MDcyMDA2MTAwNzcwMDZlPgovQ3JlYXRvciA8ZmVmZjAwNTAwMDcyMDA2MTAw
+NzcwMDZlPgo+PgplbmRvYmoKMiAwIG9iago8PCAvQ291bnQgMQovS2lkcyBb
+NSAwIFJdCi9UeXBlIC9QYWdlcwo+PgplbmRvYmoKMyAwIG9iago8PCAvUGFn
+ZXMgMiAwIFIKL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjQgMCBvYmoKPDwg
+dCAzIDAgUgovSW5mbyAxIDAgUgo+PgpzdGFydHhyZWYKMTc1NDYKJSVFT0Y=
+
+--mimepart_4d0b35f825377_3bcd3fb7d5318af4399de--
