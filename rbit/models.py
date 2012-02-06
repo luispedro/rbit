@@ -57,8 +57,12 @@ class Message(Base):
             if t is not None:
                 return decode_unicode(t, m.get_charsets())
 
-        # I feel there should be an easier way, but I have not found it
-        date = datetime.fromtimestamp(mktime(parsedate(m['Date'])))
+        try:
+            # I feel there should be an easier way, but I have not found it
+            date = datetime.fromtimestamp(mktime(parsedate(m['Date'])))
+        except TypeError:
+            # This is probably as good as anything else
+            date = datetime.now()
         return Message(
                     from_=u(m['From']),
                     uid=uid,

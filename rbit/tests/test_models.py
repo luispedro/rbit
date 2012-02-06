@@ -18,3 +18,8 @@ def test_header8():
     session.add(message_to_model(_open('header8.eml').read(), 'test', 128))
     session.commit()
 
+def test_baddate():
+    session = in_memory_sessionmaker()()
+    session.add(message_to_model(_open('bad-date.eml').read(), 'test', 128))
+    session.commit()
+
