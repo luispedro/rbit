@@ -67,15 +67,18 @@ Window {
                 fill: parent
                 margins: 5
             }
+            header: Text {
+                text: "Messages in "+iFolder;
+            }
 
             model: iMessages
             delegate: Item {
                 width: 256
                 height: 48
-                Row { Column {
+                Column {
                     Text { text: ("<b><i>"+from+"</i>:: "+subject+"</b>") }
                     Text { text: first }
-                } }
+                }
             }
         }
     }

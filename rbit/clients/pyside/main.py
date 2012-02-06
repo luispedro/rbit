@@ -19,6 +19,7 @@ class MessageList(QAbstractListModel):
     def __init__(self, messages):
         super(MessageList, self).__init__()
         self.messages = messages
+
         self.setRoleNames({
             Qt.UserRole: "from",
             Qt.UserRole+1: "subject",
@@ -38,10 +39,13 @@ class MessageList(QAbstractListModel):
         return '<unknown>'
 
 
-def load_qml(root, messages):
+def load_qml(root, folder):
+    messages = list_messages(folder)
+    messages = MessageList(messages)
     engine = QDeclarativeEngine()
     root = engine.rootContext()
     root.setContextProperty('iMessages', messages)
+    root.setContextProperty('iFolder', folder)
     c = QDeclarativeComponent(engine, 'rbit.qml', root)
     return c.create()
 
@@ -55,9 +59,7 @@ def list_messages(folder):
 
 def main(argv):
     app = QApplication(argv)
-    messages = list_messages('INBOX')
-    messages = MessageList(messages)
-    win = load_qml(app, messages)
+    win = load_qml(app, 'INBOX')
 
     app.exec_()
 
