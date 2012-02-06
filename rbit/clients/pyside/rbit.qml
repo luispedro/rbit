@@ -68,26 +68,14 @@ Window {
                 margins: 5
             }
 
-            model: ListModel {
-                objectName: "ml_model"
-                ListElement {
-                    from: "Me"
-                    recipients: "You"
-                    subject: "About You"
-                    first: "These are the first few lines of a rambling message about you"
-                }
-            }
-            delegate: message_summary
-            Component {
-                id: message_summary
-                Item {
-                    width: 256
-                    height: 48
-                    Row { Column {
-                        Text { text: ("<b><i>"+from+"</i>:: "+subject+"</b>") }
-                        Text { text: first }
-                    } }
-                }
+            model: iMessages
+            delegate: Item {
+                width: 256
+                height: 48
+                Row { Column {
+                    Text { text: ("<b><i>"+from+"</i>:: "+subject+"</b>") }
+                    Text { text: first }
+                } }
             }
         }
     }
