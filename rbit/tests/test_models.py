@@ -13,18 +13,11 @@ def test_from_email_message():
     m = Message.from_email_message(message, 123)
     assert m.to == 'rita@ritareis.org'
 
-def test_header8():
-    session = in_memory_sessionmaker()()
-    session.add(message_to_model(_open('header8.eml').read(), 'test', 128))
-    session.commit()
-
-def test_baddate():
-    session = in_memory_sessionmaker()()
-    session.add(message_to_model(_open('bad-date.eml').read(), 'test', 128))
-    session.commit()
-
-def test_github():
-    session = in_memory_sessionmaker()()
-    session.add(message_to_model(_open('github.eml').read(), 'test', 128))
-    session.commit()
-
+def test_load_model():
+    def load_commit(message):
+        session = in_memory_sessionmaker()()
+        session.add(message_to_model(_open(message+'.eml').read(), 'test', 128))
+        session.commit()
+    yield load_commit, 'header8'
+    yield load_commit, 'bad-date'
+    yield load_commit, 'github'
