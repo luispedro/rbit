@@ -29,3 +29,25 @@ def decode_unicode(text, charsets):
     return unicode(text, 'utf-8', 'replace')
 
 
+def decode_header(encoded):
+    '''
+    dec = decode_header(encoded)
+
+    Decodes RFC 2047 strings.
+
+    Parameters
+    ----------
+    encoded : str
+
+    Returns
+    -------
+    dec : unicode
+    '''
+    from email import header
+    if isinstance(encoded, unicode):
+        return unicode
+    if encoded.startswith('=?'):
+        [(s,charset)] = header.decode_header(encoded)
+        return unicode(s, charset)
+    return decode_unicode(encoded, [])
+
