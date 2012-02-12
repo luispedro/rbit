@@ -2,9 +2,8 @@
 # This file is part of rbit mail.
 
 import sqlalchemy
-from sqlalchemy import Column, String, Integer, Text
+from sqlalchemy import Column, String, Integer, Text, PickleType
 from sqlalchemy.ext.declarative import declarative_base
-import cPickle as pickle
 
 from models import Base
 __all__ = [
@@ -18,7 +17,7 @@ class ConfigEntry(Base):
     supergroup = Column(String)
     group = Column(String)
     name = Column(String)
-    value = Column(String)
+    value = Column(PickleType)
 
 config_index = sqlalchemy.Index('config_index',
         ConfigEntry.supergroup,
@@ -47,9 +46,8 @@ class Config(object):
         e = _config(self.supergroup, group, name, self.session)
         if e is None:
             raise KeyError('rbit.Config.get: Unknown key (%s,%s,%s)' % (self.supergroup, group, name))
-        return pickle.loads(str(e.value))
+        return e.value
 
     def set(self, group, name, value):
-        s = pickle.dumps(value)
-        _config_set(self.supergroup, group, name, s, self.session)
+        _config_set(self.supergroup, group, name, value, self.session)
 
