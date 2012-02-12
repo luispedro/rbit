@@ -3,7 +3,7 @@
 
 from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relation, backref
+from sqlalchemy.orm import relationship, backref
 
 from rbit.decode import decode_unicode
 
@@ -30,7 +30,7 @@ class Message(Base):
     subject = Column(String)
     body = Column(String)
 
-    attachments = relation(Attachment)
+    attachments = relationship(Attachment, backref='message')
 
     @staticmethod
     def from_email_message(m, uid):
