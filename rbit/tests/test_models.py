@@ -21,3 +21,5 @@ def test_load_model():
     yield load_commit, 'header8'
     yield load_commit, 'bad-date'
     yield load_commit, 'github'
+    yield load_commit, 'unknown'
+

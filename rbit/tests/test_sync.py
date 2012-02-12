@@ -43,8 +43,13 @@ def test_inline():
     assert type(t) is unicode
 
 
-@with_setup(setup=_mk_tmp,teardown=_rm_tmp)
 def test_attachment():
-    m = email.message_from_string(_open('forwarded.eml').read())
-    m = m.get_payload()[1]
-    result = save_attachment('INBOX', 8, m, basedir=_tmp_dir)
+    @with_setup(setup=_mk_tmp,teardown=_rm_tmp)
+    def try_save_attachment(message):
+        m = email.message_from_string(_open(message + '.eml').read())
+        m = m.get_payload()[1]
+        result = save_attachment('INBOX', 8, m, basedir=_tmp_dir)
+
+    yield try_save_attachment, 'forwarded'
+
+
