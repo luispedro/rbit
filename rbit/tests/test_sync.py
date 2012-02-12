@@ -29,7 +29,7 @@ def test_signed():
     t = get_text(m)
     assert type(t) is unicode
     m = _open('signed.eml').read()
-    model = message_to_model(m, 'folder', 20)
+    (model,) = message_to_model(m, 'folder', 20)
     assert model.to == 'pythonvision@googlegroups.com'
 
 def test_unknown_8bit():
@@ -48,8 +48,11 @@ def test_attachment():
     def try_save_attachment(message):
         m = email.message_from_string(_open(message + '.eml').read())
         m = m.get_payload()[1]
-        result = save_attachment('INBOX', 8, m, basedir=_tmp_dir)
+        for inner in m.walk():
+            if inner.get_filename():
+                f = save_attachment('INBOX', 8, inner)
 
     yield try_save_attachment, 'forwarded'
+    yield try_save_attachment, 'filename8'
 
 

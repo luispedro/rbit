@@ -51,6 +51,7 @@ def message_to_model(message, folder, uid):
     m = email.message_from_string(message)
     model = models.Message.from_email_message(m, uid)
     model.folder = folder
+    created = [model]
     for inner in m.walk():
         text = get_text(inner)
         if text is not None:
@@ -58,8 +59,11 @@ def message_to_model(message, folder, uid):
         else:
             if inner.get_filename() is not None and inner.get_content_type() != 'application/pgp-signature':
                 f = save_attachment(folder, uid, inner)
-                att = models.Attachment(mid=model,filename=f)
-    return model
+                att = models.Attachment(filename=f)
+                model.attachments.append(att)
+                created.append(att)
+    return created
+
 
 def get_text(m):
     '''
@@ -131,8 +135,9 @@ def update_folder(client, folder, create_session):
     new = messages - current
     for uid in new:
         m = client.retrieve(folder, uid)
-        m = message_to_model(m[uid]['RFC822'], folder, uid)
-        session.add(m)
-    session.commit()
+        m = m[uid]['RFC822']
+        created = message_to_model(m, folder, uid)
+        session.add_all(created)
+        session.commit()
 
     return len(extra)+len(new)
