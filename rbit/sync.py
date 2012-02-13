@@ -76,7 +76,7 @@ def get_text(m):
 
     Returns
     -------
-    text : str or None
+    text : unicode or None
         If a text is found, returns it; else, returns None
     '''
     if isinstance(m, (str,unicode)):
@@ -84,11 +84,13 @@ def get_text(m):
     if m.get_content_type() in ('text/plain','text/html'):
         text = m.get_payload(decode=True)
         return decode_unicode(text, m.get_charsets())
-    if m.get_content_type() in ('multipart/alternative', 'multipart/mixed', 'multipart/signed'):
+
+    def _first_of(m, content_type):
         for inner in m.get_payload():
-            t = get_text(inner)
-            if t is not None:
-                return t
+            if inner.get_content_type() == content_type:
+                return decode_unicode(inner.get_payload(decode=True), inner.get_charsets() + m.get_charsets())
+    if m.get_content_type() in ('multipart/signed', 'multipart/alternative', 'multipart/mixed'):
+        return _first_of(m, 'text/plain') or _first_of(m, 'text/html')
     return None
 
 def update_folder(client, folder, create_session):
