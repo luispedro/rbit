@@ -1,9 +1,8 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
-
-from PySide.QtCore import QAbstractListModel, QAbstractItemModel, Qt
+from PySide.QtCore import QAbstractListModel, QAbstractItemModel, QModelIndex, Qt
 from PySide.QtGui import QApplication
-from PySide.QtDeclarative import QDeclarativeComponent, QDeclarativeItem, QDeclarativeEngine
+from PySide.QtDeclarative import QDeclarativeComponent, QDeclarativeItem, QDeclarativeEngine, QDeclarativeProperty
 
 
 from rbit import config
@@ -47,7 +46,12 @@ def load_qml(root, folder):
     root.setContextProperty('iMessages', messages)
     root.setContextProperty('iFolder', folder)
     c = QDeclarativeComponent(engine, 'rbit.qml', root)
-    return c.create()
+    component = c.create()
+    if component is None:
+        for e in c.errors():
+            print e.toString()
+        raise RuntimeError()
+    return component
 
 def list_messages(folder):
     messages = session\
