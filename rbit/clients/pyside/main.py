@@ -1,14 +1,13 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
-from PySide.QtCore import QAbstractListModel, QAbstractItemModel, QModelIndex, Qt
-from PySide.QtGui import QApplication, QMainWindow, QStandardItemModel, QListView
-from PySide.QtDeclarative import QDeclarativeComponent, QDeclarativeItem, QDeclarativeEngine, QDeclarativeProperty
-
+from PySide.QtGui import QApplication, QMainWindow, QListView
 
 from rbit import config
 from rbit import backend
 from rbit import imap
 from rbit import models
+
+from messagelist import MessageList, MessageListItem
 
 backend.init()
 session = backend.create_session()
@@ -21,24 +20,6 @@ class RBitWindow(QMainWindow):
         self.builder = Ui_RBitMain()
         self.builder.setupUi(self)
         self.builder.messagelist.setViewMode(QListView.ListMode)
-
-
-
-class MessageList(QAbstractListModel):
-    def __init__(self, messages):
-        super(MessageList, self).__init__()
-        self.messages = messages
-
-    def rowCount(self, parent):
-        return len(self.messages)
-
-    def columnCount(self, parent):
-        return 1
-
-    def data(self, index, role):
-        if role == Qt.DisplayRole:
-            m = self.messages[index.row()]
-            return '<qt><b>%s</b> <i>%s</i> <br/>%s</qt>' % (m.from_,m.subject, m.body[:64].replace('\n', ' '))
 
 
 def list_messages(folder):
@@ -55,6 +36,7 @@ def main(argv):
     messages = list_messages('INBOX')
     messages = MessageList(messages)
     win.builder.messagelist.setModel(messages)
+    win.builder.messagelist.setItemDelegate(MessageListItem(messages.messages,win.builder.messagelist))
     win.show()
     app.exec_()
 
