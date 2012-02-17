@@ -1,5 +1,6 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
+from PySide import QtCore, QtGui, QtUiTools
 from PySide.QtGui import QApplication, QMainWindow, QListView
 
 from rbit import config
@@ -12,14 +13,6 @@ from messagelist import MessageList, MessageListItem
 backend.init()
 session = backend.create_session()
 
-class RBitWindow(QMainWindow):
-    def __init__(self, parent):
-        super(RBitWindow, self).__init__(parent)
-
-        from rbitmain import Ui_RBitMain
-        self.builder = Ui_RBitMain()
-        self.builder.setupUi(self)
-        self.builder.messagelist.setViewMode(QListView.ListMode)
 
 
 def list_messages(folder):
@@ -32,16 +25,19 @@ def list_messages(folder):
 
 def main(argv):
     app = QApplication(argv)
-    win = RBitWindow(None)
-    messages = list_messages('INBOX')
+    loader = QtUiTools.QUiLoader()
+    uifile = QtCore.QFile("rbitmain.ui")
+    win = loader.load(uifile)
+    uifile.close()
+    messages = list_messages('INBOX.Sent')
     messages = MessageList(messages)
-    win.builder.messagelist.setModel(messages)
-    win.builder.messagelist.setItemDelegate(MessageListItem(messages.messages,win.builder.messagelist))
+    win.messagelist.setModel(messages)
+    win.messagelist.setItemDelegate(MessageListItem(messages.messages,win.messagelist))
     def set_message(index):
         m = messages.messages[index.row()]
-        win.builder.subject.setText(m.subject)
-        win.builder.mbody.setText(m.body)
-    win.builder.messagelist.clicked.connect(set_message)
+        win.subject.setText(m.subject)
+        win.mbody.setText(m.body)
+    win.messagelist.clicked.connect(set_message)
     set_message(messages.createIndex(0,0))
     win.show()
     app.exec_()
