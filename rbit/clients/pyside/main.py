@@ -40,6 +40,7 @@ def main(argv):
     win.messagelist.clicked.connect(set_message)
     if messages.rowCount(None):
         set_message(messages.createIndex(0,0))
+    win.action_Quit.triggered.connect(win.close)
     win.show()
     app.exec_()
 
