@@ -24,6 +24,12 @@ class MessageListItem(QtGui.QItemDelegate):
     def paint(self, painter, option, index):
         m = self.messages[index.row()]
         rect = option.rect
+
+        if option.state & QtGui.QStyle.State_MouseOver:
+            painter.fillRect(rect, option.palette.color(QtGui.QPalette.Highlight).lighter())
+        if option.state & QtGui.QStyle.State_Selected:
+            painter.fillRect(rect, option.palette.color(QtGui.QPalette.Highlight))
+
         painter.save()
         font = painter.font()
         font.setWeight(QtGui.QFont.Bold)
