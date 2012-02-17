@@ -1,7 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 from PySide.QtCore import QAbstractListModel, QAbstractItemModel, QModelIndex, Qt
-from PySide.QtGui import QApplication
+from PySide.QtGui import QApplication, QMainWindow, QStandardItemModel, QListView
 from PySide.QtDeclarative import QDeclarativeComponent, QDeclarativeItem, QDeclarativeEngine, QDeclarativeProperty
 
 
@@ -13,45 +13,33 @@ from rbit import models
 backend.init()
 session = backend.create_session()
 
+class RBitWindow(QMainWindow):
+    def __init__(self, parent):
+        super(RBitWindow, self).__init__(parent)
+
+        from rbitmain import Ui_RBitMain
+        self.builder = Ui_RBitMain()
+        self.builder.setupUi(self)
+        self.builder.messagelist.setViewMode(QListView.ListMode)
+
+
+
 class MessageList(QAbstractListModel):
-    _roles = xrange(Qt.UserRole, Qt.UserRole + 3)
     def __init__(self, messages):
         super(MessageList, self).__init__()
         self.messages = messages
 
-        self.setRoleNames({
-            Qt.UserRole: "from",
-            Qt.UserRole+1: "subject",
-            Qt.UserRole+2: "first",
-            Qt.UserRole+3: "index",
-            })
-
     def rowCount(self, parent):
         return len(self.messages)
 
+    def columnCount(self, parent):
+        return 1
+
     def data(self, index, role):
-        m = self.messages[index.row()]
-        if role == Qt.UserRole: return m.from_
-        if role == Qt.UserRole+1: return m.subject
-        if role == Qt.UserRole+2: return m.body[:64].replace('\n',' ')
-        if role == Qt.UserRole+3: return index.row()
-        return '<unknown>'
+        if role == Qt.DisplayRole:
+            m = self.messages[index.row()]
+            return '<qt><b>%s</b> <i>%s</i> <br/>%s</qt>' % (m.from_,m.subject, m.body[:64].replace('\n', ' '))
 
-
-def load_qml(root, folder):
-    messages = list_messages(folder)
-    messages = MessageList(messages)
-    engine = QDeclarativeEngine()
-    root = engine.rootContext()
-    root.setContextProperty('iMessages', messages)
-    root.setContextProperty('iFolder', folder)
-    c = QDeclarativeComponent(engine, 'rbit.qml', root)
-    component = c.create()
-    if component is None:
-        for e in c.errors():
-            print e.toString()
-        raise RuntimeError()
-    return component
 
 def list_messages(folder):
     messages = session\
@@ -63,8 +51,11 @@ def list_messages(folder):
 
 def main(argv):
     app = QApplication(argv)
-    win = load_qml(app, 'INBOX')
-
+    win = RBitWindow(None)
+    messages = list_messages('INBOX')
+    messages = MessageList(messages)
+    win.builder.messagelist.setModel(messages)
+    win.show()
     app.exec_()
 
 if __name__ == '__main__':
