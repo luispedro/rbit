@@ -2,6 +2,7 @@
 # This file is part of rbit mail.
 from PySide import QtCore, QtGui, QtUiTools
 from PySide.QtGui import QApplication, QMainWindow, QListView
+from PySidePlus import qopen
 
 from rbit import config
 from rbit import backend
@@ -26,10 +27,9 @@ def list_messages(folder):
 def main(argv):
     app = QApplication(argv)
     loader = QtUiTools.QUiLoader()
-    uifile = QtCore.QFile("rbitmain.ui")
-    win = loader.load(uifile)
-    uifile.close()
-    messages = list_messages('INBOX.Sent')
+    with qopen('rbitmain.ui') as uifile:
+        win = loader.load(uifile)
+    messages = list_messages('INBOX')
     messages = MessageList(messages)
     win.messagelist.setModel(messages)
     win.messagelist.setItemDelegate(MessageListItem(messages.messages,win.messagelist))
@@ -38,7 +38,8 @@ def main(argv):
         win.subject.setText(m.subject)
         win.mbody.setText(m.body)
     win.messagelist.clicked.connect(set_message)
-    set_message(messages.createIndex(0,0))
+    if messages.rowCount(None):
+        set_message(messages.createIndex(0,0))
     win.show()
     app.exec_()
 
