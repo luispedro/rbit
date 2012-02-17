@@ -37,6 +37,12 @@ def main(argv):
     messages = MessageList(messages)
     win.builder.messagelist.setModel(messages)
     win.builder.messagelist.setItemDelegate(MessageListItem(messages.messages,win.builder.messagelist))
+    def set_message(index):
+        m = messages.messages[index.row()]
+        win.builder.subject.setText(m.subject)
+        win.builder.mbody.setText(m.body)
+    win.builder.messagelist.clicked.connect(set_message)
+    set_message(messages.createIndex(0,0))
     win.show()
     app.exec_()
 

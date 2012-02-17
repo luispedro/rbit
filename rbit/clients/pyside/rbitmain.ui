@@ -29,10 +29,8 @@
       <verstretch>8</verstretch>
      </sizepolicy>
     </property>
-    <property name="font">
-     <font>
-      <family>Times New Roman</family>
-     </font>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
     </property>
     <property name="spacing">
      <number>2</number>
@@ -61,27 +59,22 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>56</width>
-       <height>15</height>
+       <width>771</width>
+       <height>16</height>
       </rect>
      </property>
      <property name="text">
       <string>Subject</string>
      </property>
     </widget>
-    <widget class="QWebView" name="content">
+    <widget class="QTextBrowser" name="mbody">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>771</width>
+       <width>661</width>
        <height>131</height>
       </rect>
-     </property>
-     <property name="url">
-      <url>
-       <string>about:blank</string>
-      </url>
      </property>
     </widget>
    </widget>
@@ -119,13 +112,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
