@@ -23,17 +23,20 @@ class MessageListItem(QtGui.QItemDelegate):
 
     def paint(self, painter, option, index):
         m = self.messages[index.row()]
-        painter.save()
         rect = option.rect
+        painter.save()
+        font = painter.font()
+        font.setWeight(QtGui.QFont.Bold)
+        painter.setFont(font)
         painter.drawText(rect, '%s ::: %s' % (m.from_, m.subject))
+        painter.restore()
         rect.setTop(rect.top() + 12)
         painter.drawText(rect, QtCore.Qt.TextSingleLine, m.body)
         rect.setTop(rect.top() + 12 + 4)
-        painter.drawLine(rect.left(), rect.top(), rect.right(), rect.top())
-        painter.restore()
+        painter.drawLine(rect.left(), rect.top(), (rect.left()+rect.right())//2, rect.top())
     
     def sizeHint(self, options, index):
-        return QtCore.QSize(0, 12 + 12 + 4 + 2)
+        return QtCore.QSize(0, 12 + 12 + 4 + 4)
 
     def createEditor(self):
         return None
