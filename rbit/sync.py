@@ -22,6 +22,8 @@ def save_attachment(folder, mid, m, basedir='attachments'):
     '''
     from os import path, makedirs
     filename = decode_unicode(m.get_filename(), m.get_charsets())
+    if not filename:
+        filename = 'attachment'
     filename = path.join(basedir, 'message-%s-%s' % (folder, mid), filename)
     try:
         makedirs(path.dirname(filename))

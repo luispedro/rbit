@@ -54,5 +54,6 @@ def test_attachment():
 
     yield try_save_attachment, 'forwarded'
     yield try_save_attachment, 'filename8'
+    yield try_save_attachment, 'filename_empty'
 
 
