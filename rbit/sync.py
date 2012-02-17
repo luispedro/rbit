@@ -87,6 +87,8 @@ def get_text(m):
 
     def _first_of(m, content_type):
         for inner in m.get_payload():
+            if isinstance(inner, (str,unicode)):
+                return inner
             if inner.get_content_type() == content_type:
                 return decode_unicode(inner.get_payload(decode=True), inner.get_charsets() + m.get_charsets())
     if m.get_content_type() in ('multipart/signed', 'multipart/alternative', 'multipart/mixed'):
