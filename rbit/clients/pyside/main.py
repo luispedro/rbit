@@ -35,8 +35,21 @@ def main(argv):
     win.messagelist.setItemDelegate(MessageListItem(messages.messages,win.messagelist))
     def set_message(index):
         m = messages.messages[index.row()]
+        win.from_.setText(m.from_)
+        win.date.setText(str(m.date))
         win.subject.setText(m.subject)
         win.mbody.setText(m.body)
+
+        while win.attachments.count():
+            win.attachments.takeItem(0)
+
+        for at in m.attachments:
+            win.attachments.addItem(at.filename)
+        win.tabWidget.setTabText(
+            win.tabWidget.indexOf(win.tab_attach),
+            QtGui.QApplication.translate("RBitMain", "Attachments (%s)", None, QtGui.QApplication.UnicodeUTF8) % len(m.attachments)
+            )
+
     win.messagelist.clicked.connect(set_message)
     if messages.rowCount(None):
         set_message(messages.createIndex(0,0))
