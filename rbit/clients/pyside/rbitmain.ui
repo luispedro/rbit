@@ -10,10 +10,22 @@
     <height>396</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>RBitMain</string>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <widget class="QListView" name="messagelist">
     <property name="geometry">
      <rect>
@@ -24,9 +36,9 @@
      </rect>
     </property>
     <property name="sizePolicy">
-     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
       <horstretch>0</horstretch>
-      <verstretch>8</verstretch>
+      <verstretch>1</verstretch>
      </sizepolicy>
     </property>
     <property name="horizontalScrollBarPolicy">
@@ -48,6 +60,12 @@
       <height>171</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
     </property>
@@ -63,6 +81,12 @@
        <height>16</height>
       </rect>
      </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
       <string>Subject</string>
      </property>
@@ -75,6 +99,12 @@
        <width>661</width>
        <height>131</height>
       </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
     </widget>
    </widget>
@@ -107,7 +137,22 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_Quit">
    <property name="text">
-    <string>&amp;Quit</string>
+    <string>Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit RBit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
+   <property name="softKeyRole">
+    <enum>QAction::SelectSoftKey</enum>
    </property>
   </action>
  </widget>
