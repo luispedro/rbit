@@ -20,7 +20,7 @@ def list_messages(folder):
     messages = session\
             .query(models.Message) \
             .filter_by(folder=folder) \
-            .order_by(models.Message.date) \
+            .order_by(models.Message.date.desc()) \
             .all()
     return messages
 
