@@ -24,17 +24,21 @@ def list_messages(folder):
             .all()
     return messages
 
-def main(argv):
-    app = QApplication(argv)
+def build_mainwindow():
     loader = QtUiTools.QUiLoader()
     with qopen('rbitmain.ui') as uifile:
         win = loader.load(uifile)
-    messages = list_messages('INBOX')
-    messages = MessageList(messages)
-    win.messagelist.setModel(messages)
-    win.messagelist.setItemDelegate(MessageListItem(messages.messages,win.messagelist))
+
+    def set_messagelist(messages):
+        messages = MessageList(messages)
+        win.messagelist.setModel(messages)
+        win.messagelist.setItemDelegate(MessageListItem(messages.messages,win.messagelist))
+        if messages.rowCount(None):
+            set_message(messages.createIndex(0,0))
+
+    win.set_messagelist = set_messagelist
     def set_message(index):
-        m = messages.messages[index.row()]
+        m = win.messagelist.model().messages[index.row()]
         win.from_.setText(m.from_)
         win.date.setText(str(m.date))
         win.subject.setText(m.subject)
@@ -49,11 +53,15 @@ def main(argv):
             win.tabWidget.indexOf(win.tab_attach),
             QtGui.QApplication.translate("RBitMain", "Attachments (%s)", None, QtGui.QApplication.UnicodeUTF8) % len(m.attachments)
             )
-
     win.messagelist.clicked.connect(set_message)
-    if messages.rowCount(None):
-        set_message(messages.createIndex(0,0))
     win.action_Quit.triggered.connect(win.close)
+    return win
+
+def main(argv):
+    app = QApplication(argv)
+    win = build_mainwindow()
+    win.set_messagelist(list_messages('INBOX'))
+
     win.show()
     app.exec_()
 
