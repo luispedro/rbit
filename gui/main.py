@@ -8,12 +8,18 @@ from rbit import config
 from rbit import backend
 from rbit import imap
 from rbit import models
+from rbit import index
 
 from messagelist import MessageList, MessageListItem
 
 backend.init()
 session = backend.create_session()
+index = index.get_index()
 
+def search_messages(query):
+    return [
+        models.load_message(f,u,lambda:session)
+            for f,u in index.search(query)]
 
 
 def list_messages(folder):
@@ -53,8 +59,15 @@ def build_mainwindow():
             win.tabWidget.indexOf(win.tab_attach),
             QtGui.QApplication.translate("RBitMain", "Attachments (%s)", None, QtGui.QApplication.UnicodeUTF8) % len(m.attachments)
             )
+    def search():
+        q = win.searchBox.text()
+        messages = search_messages(q)
+        print 'found', len(messages)
+        win.set_messagelist(messages)
     win.messagelist.clicked.connect(set_message)
     win.action_Quit.triggered.connect(win.close)
+    win.searchGo.clicked.connect(search)
+
     return win
 
 def main(argv):
