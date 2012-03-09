@@ -6,9 +6,57 @@ from rbit import signals
 from rbit.backend import create_session
 
 _indexdir = 'indexdir'
+
+
+class index(object):
+    def __init__(self, ix):
+        self.ix = ix
+
+
+    def add(self, messages):
+        '''
+        index.add(messages)
+
+        Parameters
+        ----------
+        ix : whoosh.index
+        messages : sequence of models.Message
+        '''
+        for m in messages:
+            writer = self.ix.writer()
+            writer.add_document(body=m.body, subject=m.subject, from_=m.from_, recipient=m.to, date=m.date, path=('%s/%s' % (m.folder,m.uid)))
+            writer.commit()
+
+
+    def remove(self, messages):
+        '''
+        index.remove(messages)
+
+        Removes messages from the ``index``
+
+        Parameters
+        ----------
+        ix : whoosh.index
+        messages : sequence of models.Message
+        '''
+        for m in messages:
+            writer = self.ix.writer()
+            writer.delete_by_term('path', '%s/%s' % (m.folder,m.uid))
+            writer.commit()
+
+
+    def register(self):
+        '''
+        index.register()
+
+        Register signals for update of index
+        '''
+        signals.register('new-message', lambda m: self.add([m]))
+        signals.register('delete-message', lambda m: self.add([m]))
+
 def get_index():
     '''
-    ix = get_index()
+    index = get_index()
 
     Returns the index
     '''
@@ -22,42 +70,5 @@ def get_index():
         pass
     from whoosh import fields as f
     schema = f.Schema(body=f.TEXT, subject=f.TEXT, from_=f.TEXT, recipient=f.TEXT, date=f.DATETIME, path=f.ID(stored=True, unique=True))
-    return create_in(_indexdir, schema)
-
-def index_add(ix, messages):
-    '''
-    index_add(ix, messages)
-
-    Parameters
-    ----------
-    ix : whoosh.index
-    messages : sequence of models.Message
-    '''
-    for m in messages:
-        writer = ix.writer()
-        writer.add_document(body=m.body, subject=m.subject, from_=m.from_, recipient=m.to, date=m.date, path=('%s/%s' % (m.folder,m.uid)))
-        writer.commit()
-
-
-def index_remove(ix, messages):
-    '''
-    index_remove(ix, messages)
-
-    Removes messages from the ``index``
-
-    Parameters
-    ----------
-    ix : whoosh.index
-    messages : sequence of models.Message
-    '''
-    for m in messages:
-        writer = ix.writer()
-        writer.delete_by_term('path', '%s/%s' % (m.folder,m.uid))
-        writer.commit()
-
-
-def register_index():
-    ix = get_index()
-    signals.register('new-message', lambda m: index_add(ix, [m]))
-    signals.register('delete-message', lambda m: index_remove(ix, [m]))
-
+    ix = create_in(_indexdir, schema)
+    return index(ix)
