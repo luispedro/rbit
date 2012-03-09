@@ -2,6 +2,7 @@
 # This file is part of rbit mail.
 import email
 from rbit import models
+from rbit import signals
 from rbit.decode import decode_unicode
 
 def save_attachment(folder, mid, m, basedir='attachments'):
@@ -136,6 +137,7 @@ def update_folder(client, folder, create_session):
     extra = current - messages
     for uid in extra:
         m = session.query(models.Message).filter_by(folder=folder, uid=uid).first()
+        signals.emit('delete-message', [m])
         session.delete(m)
     session.commit()
 
@@ -144,6 +146,7 @@ def update_folder(client, folder, create_session):
         m = client.retrieve(folder, uid)
         m = m[uid]['RFC822']
         created = message_to_model(m, folder, uid)
+        signals.emit('new-message', [m, folder, uid])
         session.add_all(created)
         session.commit()
 
