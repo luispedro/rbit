@@ -45,3 +45,17 @@ def create_tables():
     metadata = Base.metadata
     metadata.bind = _engine
     metadata.create_all()
+
+
+def call_create_session(create_session_):
+    '''
+    session = call_create_session(create_session_)
+
+    Implements a simple protocol that is common in rbit::
+
+        if create_session_ is None: return backend.create_session()
+        else: return create_session_()
+    '''
+    if create_session_ is None:
+        create_session_ = create_session
+    return create_session_()

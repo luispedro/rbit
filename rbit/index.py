@@ -11,6 +11,8 @@ _indexdir = 'indexdir'
 class index(object):
     def __init__(self, ix):
         self.ix = ix
+        from whoosh.qparser import QueryParser
+        self.parser = QueryParser('body', schema=ix.schema)
 
 
     def add(self, messages):
@@ -53,6 +55,20 @@ class index(object):
         '''
         signals.register('new-message', lambda m: self.add([m]))
         signals.register('delete-message', lambda m: self.add([m]))
+
+    def search(self, q):
+        '''
+        for folder,uid in index.search(q):
+            ...
+        '''
+        searcher = self.ix.searcher()
+        q = unicode(q)
+        q = self.parser.parse(q)
+        for r in searcher.search(q):
+            folder,uid = r['path'].split('/')
+            uid = int(uid)
+            yield folder, uid
+
 
 def get_index():
     '''
