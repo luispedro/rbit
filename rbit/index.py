@@ -62,7 +62,8 @@ def get_index():
     '''
     from whoosh.index import open_dir, create_in, exists_in
     if exists_in(_indexdir):
-        return open_dir(_indexdir)
+        ix = open_dir(_indexdir)
+        return index(ix)
     try:
         from os import mkdir
         mkdir(_indexdir)
