@@ -1,5 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
+from os import path
+
 from PySide import QtCore, QtGui, QtUiTools
 from PySide.QtGui import QApplication, QMainWindow, QListView
 from PySidePlus import qopen
@@ -11,6 +13,7 @@ from rbit import models
 from rbit import index
 
 from messagelist import MessageList, MessageListItem
+
 
 backend.init()
 session = backend.create_session()
@@ -32,7 +35,10 @@ def list_messages(folder):
 
 def build_mainwindow():
     loader = QtUiTools.QUiLoader()
-    with qopen('rbitmain.ui') as uifile:
+    uifilepath = path.join(
+        path.dirname(__file__),
+        'rbitmain.ui')
+    with qopen(uifilepath) as uifile:
         win = loader.load(uifile)
 
     def set_messagelist(messages):
