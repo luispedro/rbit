@@ -157,3 +157,16 @@ def update_folder(client, folder, create_session=None):
         session.commit()
 
     return len(extra)+len(new)
+
+def update_all_folders(client, create_session=None):
+    '''
+    update_all_folders(client)
+
+    Parameters
+    ----------
+    client : imap.Client
+    '''
+    for folder in client.list_all_folders():
+        n = update_folder(client, folder, create_session)
+        signals.emit('status', ('imap-update', '%s updates in %s' % (n,folder)))
+

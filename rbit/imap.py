@@ -34,4 +34,16 @@ class IMAPClient(object):
         self._select_folder(folder)
         return self.connection.fetch(message, ['RFC822'])
 
+    def list_all_folders(self):
+        '''
+        for f in client.list_all_folders():
+            ...
+
+        Generate all folders on the server
+        '''
+        self._select_folder('INBOX')
+        yield 'INBOX'
+        for _,_,f in self.connection.list_sub_folders():
+            yield f
+
 
