@@ -76,10 +76,13 @@ def build_mainwindow():
 
     return win
 
+def open_folder(win, foldername):
+    win.set_messagelist(list_messages(foldername))
+
 def main(argv):
     app = QApplication(argv)
     win = build_mainwindow()
-    win.set_messagelist(list_messages('INBOX'))
+    open_folder(win, 'INBOX')
 
     win.show()
     app.exec_()
