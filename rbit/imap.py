@@ -9,6 +9,14 @@ class IMAPClient(object):
         self.connection.login(username, password)
         self.folder = None
 
+    @staticmethod
+    def from_config(cfg):
+        return IMAPClient(
+                    cfg.get('account', 'host'),
+                    cfg.get('account', 'user'),
+                    cfg.get('account', 'password'))
+
+
     def _select_folder(self, folder):
         if folder is None:
             return
