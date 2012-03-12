@@ -77,6 +77,14 @@ def build_mainwindow():
     win.action_Quit.triggered.connect(win.close)
     win.searchGo.clicked.connect(search)
 
+    def check_mail():
+        update = UpdateMessages(client)
+        update.status.connect(win.statusBar().showMessage)
+        update.done.connect(lambda: win.statusBar().showMessage(win.tr("Sync complete"), 4000))
+        update.done.connect(lambda: open_folder(win, 'INBOX'))
+        update.start()
+    win.action_CheckMail.triggered.connect(check_mail)
+
     return win
 
 def open_folder(win, foldername):
@@ -87,12 +95,8 @@ def main(argv):
     win = build_mainwindow()
     open_folder(win, 'INBOX')
 
+    win.action_CheckMail.trigger()
     win.show()
-    update = UpdateMessages(client)
-    update.status.connect(win.statusBar().showMessage)
-    update.done.connect(lambda: win.statusBar().showMessage(win.tr("Sync complete"), 4000))
-    update.done.connect(lambda: open_folder(win, 'INBOX'))
-    update.start()
     app.exec_()
 
 if __name__ == '__main__':
