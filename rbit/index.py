@@ -5,8 +5,7 @@ from rbit import models
 from rbit import signals
 from rbit.backend import create_session
 
-_indexdir = 'indexdir'
-
+from os import path
 
 class index(object):
     def __init__(self, ix):
@@ -77,15 +76,18 @@ def get_index():
     Returns the index
     '''
     from whoosh.index import open_dir, create_in, exists_in
-    if exists_in(_indexdir):
-        ix = open_dir(_indexdir)
+    indexdir = path.join(
+                path.expanduser('~/.local/share/rbit'),
+                'indexdir')
+    if exists_in(indexdir):
+        ix = open_dir(indexdir)
         return index(ix)
     try:
-        from os import mkdir
-        mkdir(_indexdir)
+        from os import makedirs
+        makedirs(indexdir)
     except OSError:
         pass
     from whoosh import fields as f
     schema = f.Schema(body=f.TEXT, subject=f.TEXT, from_=f.TEXT, recipient=f.TEXT, date=f.DATETIME, path=f.ID(stored=True, unique=True))
-    ix = create_in(_indexdir, schema)
+    ix = create_in(indexdir, schema)
     return index(ix)

@@ -5,7 +5,7 @@ from rbit import models
 from rbit import signals
 from rbit.decode import decode_unicode
 
-def save_attachment(folder, mid, m, basedir='attachments'):
+def save_attachment(folder, mid, m, basedir=None):
     '''
     save_attachment(folder, mid, m)
 
@@ -22,6 +22,11 @@ def save_attachment(folder, mid, m, basedir='attachments'):
         The attachment
     '''
     from os import path, makedirs
+    if basedir is None:
+        basedir = path.join(
+                path.expanduser('~/.local/share/rbit'),
+                'attachments')
+
     filename = decode_unicode(m.get_filename(), m.get_charsets())
     if not filename:
         filename = 'attachment'

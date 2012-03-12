@@ -10,22 +10,14 @@ from models import Base
 
 _engine = None
 _create_session = None
-_paths = [
-    '.',
-    path.join(path.abspath(path.dirname(__file__)), '..'),
-    ]
 
 def init(database_file=None):
     global _engine, _create_session
     basename = 'rbit.sqlite3'
     if database_file is None:
-        for basep in _paths:
-            fullp = path.join(basep, basename)
-            if path.exists(fullp):
-                database_file = fullp
-                break
-        else:
-            database_file = path.join(_paths[0], basename)
+        database_file = path.join(
+                path.expanduser('~/.local/share/rbit'),
+                'rbit.sqlite3')
     _engine = create_engine('sqlite:///' + database_file, echo=False)
     _create_session = sessionmaker(bind=_engine)
 
