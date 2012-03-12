@@ -1,6 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 import email
+from rbit import backend
 from rbit import models
 from rbit import signals
 from rbit.decode import decode_unicode
@@ -103,22 +104,22 @@ def get_text(m):
         return _first_of(m, 'text/plain') or _first_of(m, 'text/html')
     return None
 
-def update_folder(client, folder, create_session):
+def update_folder(client, folder, create_session=None):
     '''
-    nr_changes = update_folder(client, folder, create_session)
+    nr_changes = update_folder(client, folder, create_session={backend.create_session})
 
     Parameters
     ----------
     client : rbit.Client
     folder : str or unicode
-    create_session : callable
+    create_session : callable, optional
 
     Returns
     -------
     nr_changes : int
         Number of messages added or removed (from local store)
     '''
-    session = create_session()
+    session = backend.call_create_session(create_session)
     status = client.select_folder(folder)
     uidvalidity = status['UIDVALIDITY']
 
