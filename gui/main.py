@@ -13,11 +13,14 @@ from rbit import models
 from rbit import index
 
 from messagelist import MessageList, MessageListItem
+from tasks import UpdateMessages
 
 
 backend.init()
-session = backend.create_session()
 index = index.get_index()
+cfg = config.Config('config', backend.create_session)
+client = imap.IMAPClient.from_config(cfg)
+session = backend.create_session()
 
 def search_messages(query):
     return [
@@ -85,6 +88,11 @@ def main(argv):
     open_folder(win, 'INBOX')
 
     win.show()
+    update = UpdateMessages(client)
+    update.status.connect(win.statusBar().showMessage)
+    update.done.connect(lambda: win.statusBar().showMessage(win.tr("Sync complete"), 4000))
+    update.done.connect(lambda: open_folder(win, 'INBOX'))
+    update.start()
     app.exec_()
 
 if __name__ == '__main__':
