@@ -6,6 +6,7 @@ from PySidePlus import qopen
 
 from rbit import models
 from rbit import index
+from rbit import signals
 
 from tasks import UpdateMessages
 from messagelist import MessageList, MessageListItem
@@ -76,10 +77,19 @@ class RBitMain(QtCore.QObject):
         update = UpdateMessages(client)
         update.status.connect(self.win.statusBar().showMessage)
         update.done.connect(lambda: self.win.statusBar().showMessage(self.win.tr("Sync complete"), 4000))
-        update.done.connect(self.open_folder)
+        def updated(folder):
+            if folder == self.foldername:
+                self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
+        signals.register('folder-update', updated)
         update.start()
 
+    @QtCore.Slot(str)
     def open_folder(self, foldername):
-        self.set_messagelist(list_messages(foldername))
+        self.foldername = foldername
+        self.update_folder()
+
+    @QtCore.Slot()
+    def update_folder(self):
+        self.set_messagelist(list_messages(self.foldername))
 
 

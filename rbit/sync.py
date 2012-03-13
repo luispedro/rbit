@@ -168,5 +168,6 @@ def update_all_folders(client, create_session=None):
     '''
     for folder in client.list_all_folders():
         n = update_folder(client, folder, create_session)
+        signals.emit('folder-update', (folder,))
         signals.emit('status', ('imap-update', '%s updates in %s' % (n,folder)))
 
