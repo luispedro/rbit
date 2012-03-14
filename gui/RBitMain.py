@@ -68,8 +68,7 @@ class RBitMain(QtCore.QObject):
         self.set_messagelist(messages)
 
     def check_mail(self):
-        from rbglobals import client
-        update = UpdateMessages(client)
+        update = UpdateMessages(self)
         update.status.connect(self.win.statusBar().showMessage)
         update.done.connect(lambda: self.win.statusBar().showMessage(self.win.tr("Sync complete"), 4000))
         def updated(folder):

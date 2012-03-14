@@ -10,5 +10,4 @@ from rbit import index
 
 index = index.get_index()
 cfg = config.Config('config', backend.create_session)
-client = imap.IMAPClient.from_config(cfg)
 session = backend.create_session()

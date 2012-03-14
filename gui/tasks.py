@@ -10,9 +10,8 @@ class UpdateMessages(QtCore.QThread):
     status = QtCore.Signal(str)
     done = QtCore.Signal()
 
-    def __init__(self, client):
-        super(UpdateMessages, self).__init__()
-        self.client = client
+    def __init__(self, parent):
+        super(UpdateMessages, self).__init__(parent)
         signals.register('status', self.get_status)
 
     def get_status(self, code, message):
@@ -20,6 +19,12 @@ class UpdateMessages(QtCore.QThread):
             self.status.emit(message)
 
     def run(self):
-        update_all_folders(self.client) 
+        from rbit import config
+        from rbit import backend
+        from rbit import imap
+        cfg = config.Config('config', backend.create_session)
+        client = imap.IMAPClient.from_config(cfg)
+        update_all_folders(client)
+        client.close()
         self.done.emit()
 
