@@ -57,12 +57,18 @@ class Message(Base):
         '''
 
         from email.utils import parsedate
+        from email.header import decode_header
         from time import mktime
         from datetime import datetime
 
-        def u(t):
-            if t is not None:
-                return decode_unicode(t, m.get_charsets())
+        def u(h):
+            s = u''
+            for text,charset in decode_header(h):
+                if charset is None:
+                    s += decode_unicode(text, [])
+                else:
+                    s += decode_unicode(text, [charset])
+            return s
 
         try:
             # I feel there should be an easier way, but I have not found it
