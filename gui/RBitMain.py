@@ -5,24 +5,19 @@ from PySide import QtCore, QtGui, QtUiTools
 from PySidePlus import qopen
 
 from rbit import models
+from rbit import messages
 from rbit import index
 from rbit import signals
+from rbit import backend
 
 from tasks import UpdateMessages
 from messagelist import MessageList, MessageListItem
 
-def list_messages(folder):
-    from rbglobals import session
-    messages = session\
-            .query(models.Message) \
-            .filter_by(folder=folder) \
-            .order_by(models.Message.date.desc()) \
-            .all()
-    return messages
 
 def search_messages(query):
+    from rbglobals import session
     return [
-        models.load_message(f,u,lambda:session)
+        messages.load_message(f,u,lambda:session)
             for f,u in index.search(query)]
 
 
@@ -90,6 +85,7 @@ class RBitMain(QtCore.QObject):
 
     @QtCore.Slot()
     def update_folder(self):
-        self.set_messagelist(list_messages(self.foldername))
+        from rbglobals import session
+        self.set_messagelist(messages.list_messages(self.foldername, lambda: session))
 
 

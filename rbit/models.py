@@ -78,28 +78,6 @@ class Message(Base):
     def __str__(self):
         return str(unicode(self))
 
-def load_message(folder, uid, create_session=None):
-    '''
-    m = load_message(folder, uid, create_session={backend.create_session})
-
-    Parameters
-    ----------
-    folder : str
-    uid : int
-    create_session : callable
-
-    Returns
-    -------
-    m : Message or None
-    '''
-    from rbit.backend import call_create_session
-    session = call_create_session(create_session)
-    return session\
-            .query(Message) \
-            .filter_by(folder=folder) \
-            .filter_by(uid=uid) \
-            .first()
-
 
 class Folder(Base):
     __tablename__ = 'folder'
