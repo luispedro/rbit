@@ -26,6 +26,11 @@ class IMAPClient(object):
     def select_folder(self, folder):
         return self.connection.select_folder(folder)
 
+    def flags(self, folder, uids):
+        self._select_folder(folder)
+        res = self.connection.fetch(uids, ['FLAGS'])
+        return {u:r['FLAGS'] for u,r in res.iteritems()}
+
     def list_messages(self, folder=None):
         self._select_folder(folder)
         return self.connection.search()

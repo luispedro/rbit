@@ -15,6 +15,12 @@ class Attachment(Base):
     mid = Column(Integer, ForeignKey('message.mid'), index=True)
     filename = Column(String)
 
+class Flag(Base):
+    __tablename__ = 'message_flag'
+    id = Column(Integer, primary_key=True)
+    mid = Column(Integer, ForeignKey('message.mid'), index=True)
+    flag = Column(String, index=True)
+
 class Message(Base):
     __tablename__ = 'message'
 
@@ -31,6 +37,7 @@ class Message(Base):
     body = Column(String)
 
     attachments = relationship(Attachment, backref='message')
+    flags = relationship(Flag, backref='message')
 
     @staticmethod
     def from_email_message(m, uid):

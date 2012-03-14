@@ -5,6 +5,7 @@ from rbit import backend
 from rbit import models
 from rbit import signals
 from rbit.decode import decode_unicode
+from rbit.messages import load_message
 
 def _attachments_dir(folder, mid, basedir=None):
     from os import path
@@ -171,6 +172,17 @@ def update_folder(client, folder, create_session=None):
         signals.emit('new-message', [m, folder, uid])
         session.add_all(created)
         session.commit()
+    for uid in messages:
+        m = load_message(folder, uid, lambda: session)
+        flags = client.flags(folder, uid)
+        rfs = set(flags[uid])
+        for f in m.flags:
+            if f.flag not in rfs:
+                session.delete(f)
+        lfs = set(f.flag for f in m.flags)
+        for f in rfs-lfs:
+            session.add(models.Flag(mid=m.mid, flag=f))
+    session.commit()
 
     return len(extra)+len(new)
 
