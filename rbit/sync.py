@@ -6,6 +6,14 @@ from rbit import models
 from rbit import signals
 from rbit.decode import decode_unicode
 
+def _attachments_dir(folder, mid, basedir=None):
+    from os import path
+    if basedir is None:
+        basedir = path.join(
+                path.expanduser('~/.local/share/rbit'),
+                'attachments')
+    return path.join(basedir, 'message-%s-%s' % (folder, mid))
+
 def save_attachment(folder, mid, m, basedir=None):
     '''
     save_attachment(folder, mid, m)
@@ -23,17 +31,13 @@ def save_attachment(folder, mid, m, basedir=None):
         The attachment
     '''
     from os import path, makedirs
-    if basedir is None:
-        basedir = path.join(
-                path.expanduser('~/.local/share/rbit'),
-                'attachments')
-
+    dirname = _attachments_dir(folder, mid, basedir)
     filename = decode_unicode(m.get_filename(), m.get_charsets())
     if not filename:
         filename = 'attachment'
-    filename = path.join(basedir, 'message-%s-%s' % (folder, mid), filename)
+    filename = path.join(dirname, filename)
     try:
-        makedirs(path.dirname(filename))
+        makedirs(dirname)
     except:
         pass
     with open(filename, 'w') as output:
@@ -119,6 +123,7 @@ def update_folder(client, folder, create_session=None):
     nr_changes : int
         Number of messages added or removed (from local store)
     '''
+    from os import unlink, rmdir
     session = backend.call_create_session(create_session)
     status = client.select_folder(folder)
     uidvalidity = status['UIDVALIDITY']
@@ -144,6 +149,17 @@ def update_folder(client, folder, create_session=None):
     for uid in extra:
         m = session.query(models.Message).filter_by(folder=folder, uid=uid).first()
         signals.emit('delete-message', [m])
+        for at in m.attachments:
+            try:
+                unlink(at.filename)
+            except OSError:
+                pass
+            session.delete(at)
+        try:
+            rmdir(_attachments_dir(m.folder, m.uid))
+        except OSError:
+            pass
+
         session.delete(m)
     session.commit()
 
