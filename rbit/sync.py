@@ -48,7 +48,7 @@ def save_attachment(folder, mid, m, basedir=None):
             output.write(m.get_payload(decode=True))
     return filename
 
-def message_to_model(message, folder, uid):
+def message_to_model(message, folder, uid, flags):
     '''
     message = retrieve_model(message, folder, uid)
 
@@ -61,7 +61,8 @@ def message_to_model(message, folder, uid):
     folder : str
     uid : int
         IMAP UID
-    folderm : models.Folder, optional
+    flags : seq of str
+        Sequence of flags as strings
     '''
     m = email.message_from_string(message)
     model = models.Message.from_email_message(m, uid)
@@ -77,6 +78,10 @@ def message_to_model(message, folder, uid):
                 att = models.Attachment(filename=f)
                 model.attachments.append(att)
                 created.append(att)
+    for f in flags:
+        f = models.Flag(flag=f)
+        model.flags.append(f)
+        created.append(f)
     return created
 
 
@@ -109,6 +114,9 @@ def get_text(m):
         return _first_of(m, 'text/plain') or _first_of(m, 'text/html')
     return None
 
+def _s(m):
+    signals.emit('status', ('imap-update', m))
+
 def update_folder(client, folder, create_session=None):
     '''
     nr_changes = update_folder(client, folder, create_session={backend.create_session})
@@ -128,6 +136,8 @@ def update_folder(client, folder, create_session=None):
     session = backend.call_create_session(create_session)
     status = client.select_folder(folder)
     uidvalidity = status['UIDVALIDITY']
+    (highestmodseq,) = status['HIGHESTMODSEQ']
+    highestmodseq = int(highestmodseq)
 
     folderm = session.query(models.Folder).filter_by(name=folder).first()
     if folderm is not None and folderm.uidvalidity != uidvalidity:
@@ -141,13 +151,17 @@ def update_folder(client, folder, create_session=None):
     if folderm is None:
         folderm = models.Folder(name=folder, uidvalidity=uidvalidity)
         session.add(folderm)
+        prevmodseq = None
+    else:
+        prevmodseq = folderm.highestmodseq
 
     messages = set(client.list_messages())
     current = set(uid for uid, in
                     session.query(models.Message.uid).filter_by(folder=folder).all())
 
     extra = current - messages
-    for uid in extra:
+    _s('Deleting removed message in folder %s...' % folder)
+    for i,uid in enumerate(extra):
         m = session.query(models.Message).filter_by(folder=folder, uid=uid).first()
         signals.emit('delete-message', [m])
         for at in m.attachments:
@@ -165,23 +179,35 @@ def update_folder(client, folder, create_session=None):
     session.commit()
 
     new = messages - current
-    for uid in new:
+    for i,uid in enumerate(new):
+        _s('Getting message %s of %s in folder %s' % (i+1, len(new), folder))
         m = client.retrieve(folder, uid)
-        m = m[uid]['RFC822']
-        created = message_to_model(m, folder, uid)
-        signals.emit('new-message', [m, folder, uid])
+        rfc822 = m[uid]['RFC822']
+        flags = m[uid]['FLAGS']
+        created = message_to_model(rfc822, folder, uid, flags)
+        signals.emit('new-message', [created[0], folder, uid])
         session.add_all(created)
         session.commit()
-    for uid in messages:
-        m = load_message(folder, uid, lambda: session)
-        flags = client.flags(folder, uid)
-        rfs = set(flags[uid])
-        for f in m.flags:
-            if f.flag not in rfs:
-                session.delete(f)
-        lfs = set(f.flag for f in m.flags)
-        for f in rfs-lfs:
-            session.add(models.Flag(mid=m.mid, flag=f))
+
+    if prevmodseq is not None:
+        _s('Updating flags for `%s`...' % folder)
+        changed = client.fetch_flags_since(prevmodseq)
+        for uid in changed:
+            m = load_message(folder, uid, lambda: session)
+            flags = set(changed['FLAGS'])
+            for f in m.flags:
+                if f.flag not in rfs:
+                    session.delete(f)
+            lfs = set(f.flag for f in m.flags)
+            for f in rfs-lfs:
+                session.add(models.Flag(mid=m.mid, flag=f))
+        session.commit()
+
+    # We need to wait until we have done all the updates to update the
+    # `highestmodseq` value. This way, if interrupted, we might re-do some work
+    # on the next pass, but we will never miss an update.
+    folderm.highestmodseq = highestmodseq
+    session.add(folderm)
     session.commit()
 
     return len(extra)+len(new)
@@ -197,5 +223,5 @@ def update_all_folders(client, create_session=None):
     for folder in client.list_all_folders():
         n = update_folder(client, folder, create_session)
         signals.emit('folder-update', (folder,))
-        signals.emit('status', ('imap-update', '%s updates in %s' % (n,folder)))
+        _s('%s updates in %s' % (n,folder))
 

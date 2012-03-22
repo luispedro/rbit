@@ -31,13 +31,16 @@ class IMAPClient(object):
         res = self.connection.fetch(uids, ['FLAGS'])
         return {u:r['FLAGS'] for u,r in res.iteritems()}
 
+    def fetch_flags_since(self, modseq):
+        return self.connection.fetch('1:*', ['FLAGS'], ['CHANGEDSINCE %s' % modseq])
+
     def list_messages(self, folder=None):
         self._select_folder(folder)
         return self.connection.search()
 
     def retrieve(self, folder, message):
         self._select_folder(folder)
-        return self.connection.fetch(message, ['RFC822'])
+        return self.connection.fetch(message, ['RFC822', 'FLAGS'])
 
     def list_all_folders(self):
         '''
