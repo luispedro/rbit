@@ -15,7 +15,7 @@ from messagelist import MessageList, MessageListItem
 
 
 def search_messages(query):
-    from rbglobals import session
+    from rbglobals import session, index
     return [
         messages.load_message(f,u,lambda:session)
             for f,u in index.search(query)]
