@@ -32,6 +32,7 @@ class RBitMain(QtCore.QObject):
         with qopen(uifilepath) as uifile:
             self.win = loader.load(uifile)
 
+        self.foldername = None
         self.win.messagelist.clicked.connect(self.set_message)
         self.win.action_Quit.triggered.connect(self.win.close)
         self.win.searchGo.clicked.connect(self.search)

@@ -23,6 +23,7 @@ def main(argv):
         dialog = config_dialog()
         dialog.accepted.connect(main.win.action_CheckMail.trigger)
         dialog.show()
+        main.foldername = 'INBOX'
     app.exec_()
 
 if __name__ == '__main__':
