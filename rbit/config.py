@@ -48,6 +48,19 @@ class Config(object):
             raise KeyError('rbit.Config.get: Unknown key (%s,%s,%s)' % (self.supergroup, group, name))
         return e.value
 
+    def has_entry(self, group, name):
+        try:
+            self.get(group, name)
+            return True
+        except KeyError:
+            return False
+
+    def get_default(self, group, name, default):
+        try:
+            return self.get(group, name)
+        except KeyError:
+            return default
+
     def set(self, group, name, value):
         _config_set(self.supergroup, group, name, value, self.session)
 
