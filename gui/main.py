@@ -18,6 +18,7 @@ def main(argv):
     main.open_folder('INBOX')
     main.win.action_CheckMail.trigger()
     main.win.show()
+    app.aboutToQuit.connect(main.worker.kill)
     app.exec_()
 
 if __name__ == '__main__':

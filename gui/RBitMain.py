@@ -10,7 +10,7 @@ from rbit import index
 from rbit import signals
 from rbit import backend
 
-from tasks import UpdateMessages
+from tasks import GEventLoop, UpdateMessages
 from messagelist import MessageList, MessageListItem
 
 
@@ -36,6 +36,8 @@ class RBitMain(QtCore.QObject):
         self.win.action_Quit.triggered.connect(self.win.close)
         self.win.searchGo.clicked.connect(self.search)
         self.win.action_CheckMail.triggered.connect(self.check_mail)
+        self.worker = GEventLoop(self)
+        self.worker.start()
 
     def set_messagelist(self, messages):
         messages = MessageList(messages)
@@ -75,7 +77,7 @@ class RBitMain(QtCore.QObject):
             if folder == self.foldername:
                 self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
         signals.register('folder-update', updated)
-        update.start()
+        self.worker.spawn(update.perform)
 
     @QtCore.Slot(str)
     def open_folder(self, foldername):
