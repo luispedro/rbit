@@ -8,17 +8,21 @@ from rbit import backend
 from rbit import imap
 
 from RBitMain import RBitMain
-
-
-
+from ConfigDialog import config_dialog
 
 def main(argv):
+    from rbglobals import cfg
     app = QApplication(argv)
     main = RBitMain(app)
-    main.open_folder('INBOX')
-    main.win.action_CheckMail.trigger()
-    main.win.show()
     app.aboutToQuit.connect(main.worker.kill)
+    main.win.show()
+    if cfg.has_entry('account', 'user'):
+        main.open_folder('INBOX')
+        main.win.action_CheckMail.trigger()
+    else:
+        dialog = config_dialog()
+        dialog.accepted.connect(main.win.action_CheckMail.trigger)
+        dialog.show()
     app.exec_()
 
 if __name__ == '__main__':
