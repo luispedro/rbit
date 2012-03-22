@@ -20,6 +20,7 @@ def init(database_file=None):
                 'rbit.sqlite3')
     _engine = create_engine('sqlite:///' + database_file, echo=False)
     _create_session = sessionmaker(bind=_engine)
+    create_tables()
 
 def create_session():
     if _create_session is None:
