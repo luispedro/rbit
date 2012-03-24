@@ -36,6 +36,7 @@ def save_attachment(folder, mid, m, basedir=None):
     filename = decode_unicode(m.get_filename(), m.get_charsets())
     if not filename:
         filename = 'attachment'
+    filename = filename.replace('/','%2F')
     filename = path.join(dirname, filename)
     try:
         makedirs(dirname)
