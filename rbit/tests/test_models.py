@@ -16,7 +16,7 @@ def test_from_email_message():
 def test_load_model():
     def load_commit(message):
         session = in_memory_sessionmaker()()
-        session.add_all(message_to_model(_open(message+'.eml').read(), 'test', 128))
+        session.add_all(message_to_model(_open(message+'.eml').read(), 'test', 128, []))
         session.commit()
     yield load_commit, 'header8'
     yield load_commit, 'bad-date'

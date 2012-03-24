@@ -29,7 +29,7 @@ def test_signed():
     t = get_text(m)
     assert type(t) is unicode
     m = _open('signed.eml').read()
-    (model,) = message_to_model(m, 'folder', 20)
+    (model,) = message_to_model(m, 'folder', 20, [])
     assert model.to == 'pythonvision@googlegroups.com'
 
 def test_unknown_8bit():
