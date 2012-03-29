@@ -195,11 +195,11 @@ def update_folder(client, folder, create_session=None):
         changed = client.fetch_flags_since(prevmodseq)
         for uid in changed:
             m = load_message(folder, uid, lambda: session)
-            flags = set(changed[uid]['FLAGS'])
+            rfs = set(changed[uid]['FLAGS'])
+            lfs = set(f.flag for f in m.flags)
             for f in m.flags:
                 if f.flag not in rfs:
                     session.delete(f)
-            lfs = set(f.flag for f in m.flags)
             for f in rfs-lfs:
                 session.add(models.Flag(mid=m.mid, flag=f))
         session.commit()
