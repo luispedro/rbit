@@ -25,6 +25,16 @@ class MessageListItem(QtGui.QItemDelegate):
         m = self.messages[index.row()]
         rect = option.rect
 
+        flagstr = ''
+        flags = set(f.flag for f in m.flags)
+        print flags
+        if r'\Answered' in flags or \
+           r'$Replied' in flags:
+            flagstr += "R"
+        if r'$ATTACHMENT' in flags:
+            flagstr += "A"
+
+
         if option.state & QtGui.QStyle.State_MouseOver:
             painter.fillRect(rect, option.palette.color(QtGui.QPalette.Highlight).lighter())
         if option.state & QtGui.QStyle.State_Selected:
@@ -34,7 +44,7 @@ class MessageListItem(QtGui.QItemDelegate):
         font = painter.font()
         font.setWeight(QtGui.QFont.Bold)
         painter.setFont(font)
-        painter.drawText(rect, '%s ::: %s' % (m.from_, m.subject))
+        painter.drawText(rect, '%-8s %s ::: %s' % (flagstr, m.from_, m.subject))
         painter.restore()
         rect.setTop(rect.top() + 12)
         painter.drawText(rect, QtCore.Qt.TextSingleLine, m.body)
