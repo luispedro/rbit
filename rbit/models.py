@@ -85,6 +85,13 @@ class Message(Base):
                     cc=u(m.get('CC', '')),
                     bcc=u(m.get('BCC', '')))
 
+    @staticmethod
+    def load_by_mid(mid, create_session=None):
+        from rbit.backend import call_create_session
+        return call_create_session(create_session). \
+                    query(Message). \
+                    get(mid)
+
     def __unicode__(self):
         return u'Message(%s, %s -> %s)' % (self.uid, self.from_, self.to)
 

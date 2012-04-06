@@ -9,10 +9,11 @@ from vw_learner import VWLearner
 
 def train_model(create_session=None):
     session = call_create_session(create_session)
-    ms = session.query(models.Message).all()
+    ms = session.query(models.Message.folder, models.Message.mid).all()
     labels = [m.folder for m in ms]
     learner = multi_tree_learner(VWLearner())
-    return learner.train(ms, labels)
+    mids = [m.mid for m in ms]
+    return learner.train(mids, labels)
 
 if __name__ == '__main__':
     import pickle

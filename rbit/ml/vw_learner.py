@@ -50,7 +50,8 @@ class VWLearner(object):
         self.passes = 2
         self.ngram = 3
 
-    def train(self, messages, labels, name, normalisedlabels):
+    def train(self, mids, labels, name, normalisedlabels, create_session=None):
+        from rbit import models
         assert normalisedlabels
         assert max(labels) == 1
         model_file = path.join(self.basedir, '%s.model' % name)
@@ -63,7 +64,8 @@ class VWLearner(object):
             '--passes', str(self.passes)
             ],
             stdin=subprocess.PIPE)
-        for message,ell in zip(messages,labels):
+        for mid,ell in zip(mids,labels):
+            message = models.Message.load_by_mid(mid, create_session)
             print >>proc.stdin, \
                 ("1" if ell else "-1"), \
                 "|body", _fixl(message.body), \
