@@ -11,8 +11,8 @@ def _maybemkdir(dir):
     except OSError:
         pass
 
-basedir = path.expanduser('~/.local/share/rbit/vw/')
-_maybemkdir(basedir)
+_basedir = path.expanduser('~/.local/share/rbit/vw/')
+_maybemkdir(_basedir)
 
 def _fixl(l):
     if l is None:
@@ -45,7 +45,7 @@ class VWModel(object):
 
 
 class VWLearner(object):
-    def __init__(self, basedir='.'):
+    def __init__(self, basedir=_basedir):
         self.basedir = basedir
         self.passes = 2
         self.ngram = 3
