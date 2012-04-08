@@ -3,11 +3,12 @@
 
 from os import path
 
-from multi import multi_tree_learner
 from rbit import models
 from rbit import config
 from rbit.backend import call_create_session
-from vw_learner import VWLearner
+
+from rbit.ml.multi import multi_tree_learner
+from rbit.ml.vw_learner import VWLearner
 
 def _maybemkdir(dir):
     from os import makedirs
