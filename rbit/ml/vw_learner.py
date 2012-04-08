@@ -4,16 +4,6 @@
 import subprocess
 from os import path
 
-def _maybemkdir(dir):
-    from os import makedirs
-    try:
-        makedirs(dir)
-    except OSError:
-        pass
-
-_basedir = path.expanduser('~/.local/share/rbit/vw/')
-_maybemkdir(_basedir)
-
 def _fixl(l):
     if l is None:
         return ""
@@ -45,7 +35,7 @@ class VWModel(object):
 
 
 class VWLearner(object):
-    def __init__(self, basedir=_basedir):
+    def __init__(self, basedir):
         self.basedir = basedir
         self.passes = 2
         self.ngram = 3
