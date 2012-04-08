@@ -4,6 +4,8 @@
 import subprocess
 from os import path
 
+_vw_path = 'vw'
+
 def _fixl(l):
     if l is None:
         return ""
@@ -17,7 +19,7 @@ class VWModel(object):
         self.model_file = model_file
 
     def apply(self, message):
-        proc = subprocess.Popen(['./vw',
+        proc = subprocess.Popen([_vw_path,
             '-t',
             '--initial_regressor', self.model_file,
             '-r', '/dev/stdout',
@@ -30,8 +32,9 @@ class VWModel(object):
 
         proc.stdin.close()
         res = proc.stdout.read()
+        print res
         res = float(res)
-        return res
+        return res > 0
 
 
 class VWLearner(object):
@@ -46,7 +49,7 @@ class VWLearner(object):
         assert max(labels) == 1
         model_file = path.join(self.basedir, '%s.model' % name)
         cache_file = path.join(self.basedir, '%s.cache' % name)
-        proc = subprocess.Popen(['./vw',
+        proc = subprocess.Popen([_vw_path,
             '--cache_file', cache_file,
             '--adaptive',
             '--final_regressor', model_file,
