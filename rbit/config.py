@@ -39,8 +39,9 @@ def _config_set(supergroup, group, name, value, session):
 
 class Config(object):
     def __init__(self, supergroup, create_session=None):
+        from rbit.backend import call_create_session
         self.supergroup = supergroup
-        self.session = create_session()
+        self.session = call_create_session(create_session)
 
     def get(self, group, name):
         e = _config(self.supergroup, group, name, self.session)
