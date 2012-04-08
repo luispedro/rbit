@@ -1,7 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
-from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime
+from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime, Float, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 
@@ -21,6 +21,16 @@ class Flag(Base):
     mid = Column(Integer, ForeignKey('message.mid'), index=True)
     flag = Column(String, index=True)
 
+class Prediction(Base):
+    __tablename__ = 'message_prediction'
+
+    id = Column(Integer, primary_key=True)
+    mid = Column(Integer, ForeignKey('message.mid'), index=True)
+    type = Column(String)
+    strength = Column(Float)
+    value = Column(PickleType)
+
+
 class Message(Base):
     __tablename__ = 'message'
 
@@ -38,6 +48,7 @@ class Message(Base):
 
     attachments = relationship(Attachment, backref='message')
     flags = relationship(Flag, backref='message')
+    predictions = relationship(Prediction, backref='message')
 
     @staticmethod
     def from_email_message(m, uid):
