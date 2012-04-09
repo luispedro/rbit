@@ -186,7 +186,7 @@ def update_folder(client, folder, create_session=None):
         rfc822 = m[uid]['RFC822']
         flags = m[uid]['FLAGS']
         created = message_to_model(rfc822, folder, uid, flags)
-        signals.emit('new-message', [created[0], folder, uid])
+        signals.emit('new-message', [created[0], folder, uid], {'session':session})
         session.add_all(created)
         session.commit()
 
