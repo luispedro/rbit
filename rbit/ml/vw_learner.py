@@ -13,6 +13,15 @@ def _fixl(l):
         return s.encode('utf-8').replace(':','_').replace('|','_')
     return ":1 ".join(map(fixs, l.split()))
 
+
+def _output_message(output, message, label):
+    print >>output, \
+        label, \
+        "|body", _fixl(message.body), \
+        "|subject", _fixl(message.subject), \
+        "|from", _fixl(message.from_), \
+        "|to", _fixl(message.recipients)
+
 class VWModel(object):
     def __init__(self, cache_file, model_file):
         self.cache_file = cache_file
@@ -26,15 +35,11 @@ class VWModel(object):
             ],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE)
-        print >>proc.stdin, "0", \
-            "|body", _fixl(message.body), \
-            "|subject", _fixl(message.subject)
+        _output_message(proc.stdin, message, 0)
 
         proc.stdin.close()
         res = proc.stdout.read()
-        print res
-        res = float(res)
-        return res > 0
+        return float(res)
 
 
 class VWLearner(object):
@@ -59,10 +64,7 @@ class VWLearner(object):
             stdin=subprocess.PIPE)
         for mid,ell in zip(mids,labels):
             message = models.Message.load_by_mid(mid, create_session)
-            print >>proc.stdin, \
-                ("1" if ell else "-1"), \
-                "|body", _fixl(message.body), \
-                "|subject", _fixl(message.subject)
+            _output_message(proc.stdin, message, (1 if ell else -1))
         proc.stdin.close()
         proc.wait()
         return VWModel(cache_file, model_file)

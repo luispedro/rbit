@@ -22,10 +22,11 @@ class multi_tree_model(object):
     def apply(self, message):
         def ap_recursive(smodel):
             if len(smodel) == 1:
-                return self.labelnames[smodel[0]]
-            model,left,right = smodel
-            if model.apply(message): return ap_recursive(left)
-            else: return ap_recursive(right)
+                return 0.0,self.labelnames[smodel[0]]
+            model,neg,pos = smodel
+            val = model.apply(message)
+            nval, label = ap_recursive(pos if (val > 0) else neg)
+            return max(abs(val), nval), label
         return ap_recursive(self.model)
 
 class multi_tree_learner(object):
