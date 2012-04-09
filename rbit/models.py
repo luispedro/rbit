@@ -50,6 +50,21 @@ class Message(Base):
     flags = relationship(Flag, backref='message')
     predictions = relationship(Prediction, backref='message')
 
+
+    @property
+    def recipients(self):
+        r = ''
+        if self.to:
+            r += self.to
+        if self.cc:
+            r += (' ' if r else '')
+            r += self.cc
+        if self.bcc:
+            r += (' ' if r else '')
+            r += self.bcc
+        return r
+
+
     @staticmethod
     def from_email_message(m, uid):
         '''
