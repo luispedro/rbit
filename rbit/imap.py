@@ -51,6 +51,9 @@ class IMAPClient(object):
         self.connection.copy(uids, destination_folder)
         return self.connection.delete_messages(uids)
 
+    def expunge(self):
+        self.connection.expunge()
+
     def list_all_folders(self):
         '''
         for f in client.list_all_folders():
