@@ -27,9 +27,9 @@ class MessageListItem(QtGui.QItemDelegate):
 
         flagstr = ''
         flags = set(f.flag for f in m.flags)
-        print flags
         if r'\Answered' in flags or \
-           r'$Replied' in flags:
+           r'$Replied' in flags or \
+           r'$REPLIED' in flags:
             flagstr += "R"
         if r'$ATTACHMENT' in flags:
             flagstr += "A"
