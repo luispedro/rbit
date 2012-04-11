@@ -16,6 +16,8 @@ class IMAPClient(object):
                     cfg.get('account', 'user'),
                     cfg.get('account', 'password'))
 
+    def close(self):
+        pass
 
     def _select_folder(self, folder):
         if folder is None:
