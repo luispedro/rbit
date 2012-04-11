@@ -48,10 +48,11 @@ class GEventLoop(QtCore.QThread):
         self.q.put('quit')
         self.wait()
 
-class UpdateMessages(QtCore.QObject):
+class RBitTask(QtCore.QObject):
     status = QtCore.Signal(str)
     done = QtCore.Signal()
 
+class UpdateMessages(RBitTask):
     def __init__(self, parent):
         super(UpdateMessages, self).__init__(parent)
         signals.register('status', self.get_status)
@@ -76,3 +77,22 @@ class UpdateMessages(QtCore.QObject):
         update_all_folders(client)
         client.close()
         self.done.emit()
+
+class TrashMessage(RBitTask):
+    def __init__(self, parent, message):
+        super(TrashMessage, self).__init__(parent)
+        self.folder = message.folder
+        self.uid = message.uid
+
+    def perform(self):
+        from rbit import config
+        from rbit import backend
+        from rbit import imap
+        cfg = config.Config('config', backend.create_session)
+        client = imap.IMAPClient.from_config(cfg)
+        client.select_folder(self.folder)
+        client.trash_messages([self.uid])
+        client.expunge()
+        client.close()
+        self.done.emit()
+

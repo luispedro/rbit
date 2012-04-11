@@ -10,7 +10,7 @@ from rbit import index
 from rbit import signals
 from rbit import backend
 
-from tasks import GEventLoop, UpdateMessages
+from tasks import GEventLoop, UpdateMessages, TrashMessage
 from messagelist import MessageList, MessageListItem
 
 
@@ -32,11 +32,13 @@ class RBitMain(QtCore.QObject):
         with qopen(uifilepath) as uifile:
             self.win = loader.load(uifile)
 
+        self.active_message = None
         self.foldername = None
         self.win.messagelist.clicked.connect(self.set_message)
         self.win.action_Quit.triggered.connect(self.win.close)
         self.win.searchGo.clicked.connect(self.search)
         self.win.action_CheckMail.triggered.connect(self.check_mail)
+        self.win.action_Trash.triggered.connect(self.trash)
         self.worker = GEventLoop(self)
         self.worker.start()
 
@@ -63,6 +65,7 @@ class RBitMain(QtCore.QObject):
             self.win.tabWidget.indexOf(self.win.tab_attach),
             QtGui.QApplication.translate("RBitMain", "Attachments (%s)", None, QtGui.QApplication.UnicodeUTF8) % len(m.attachments)
             )
+        self.active_message = m
 
     def search(self):
         q = self.win.searchBox.text()
@@ -79,6 +82,17 @@ class RBitMain(QtCore.QObject):
                 self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
         signals.register('folder-update', updated)
         self.worker.spawn(update.perform)
+
+    def trash(self):
+        if self.active_message is None:
+            return
+        model = self.win.messagelist.model()
+        model.messages.remove(self.active_message)
+        self.worker.spawn(
+            TrashMessage(self, self.active_message).perform
+            )
+        self.active_message = None
+
 
     @QtCore.Slot(str)
     def open_folder(self, foldername):
