@@ -10,7 +10,7 @@ from rbit import index
 from rbit import signals
 from rbit import backend
 
-from tasks import GEventLoop, UpdateMessages, TrashMessage
+from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage
 from messagelist import MessageList, MessageListItem
 
 
@@ -39,6 +39,7 @@ class RBitMain(QtCore.QObject):
         self.win.searchGo.clicked.connect(self.search)
         self.win.action_CheckMail.triggered.connect(self.check_mail)
         self.win.action_Trash.triggered.connect(self.trash)
+        self.win.actionAuto_Move.triggered.connect(self.auto_move)
         self.worker = GEventLoop(self)
         self.worker.start()
 
@@ -84,13 +85,28 @@ class RBitMain(QtCore.QObject):
         self.worker.spawn(update.perform)
 
     def trash(self):
+        self._trash_or_move('trash')
+
+    def auto_move(self):
+        self._trash_or_move('move')
+
+    def _trash_or_move(self, action):
         if self.active_message is None:
             return
         model = self.win.messagelist.model()
         model.messages.remove(self.active_message)
-        self.worker.spawn(
-            TrashMessage(self, self.active_message).perform
-            )
+        if action == 'move':
+            for pred in self.active_message.predictions:
+                if pred.type == 'folder':
+                    target = pred.value
+                    break
+            else:
+                self.win.statusBar().showMessage(self.win.tr("Could not auto-move message"), 4000)
+                return
+            task = MoveMessage(self, self.active_message, target)
+        else:
+            task = TrashMessage(self, self.active_message)
+        self.worker.spawn(task.perform)
         self.active_message = None
 
 
