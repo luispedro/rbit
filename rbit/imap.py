@@ -42,6 +42,13 @@ class IMAPClient(object):
         self._select_folder(folder)
         return self.connection.fetch(message, ['RFC822', 'FLAGS'])
 
+    def trash_messages(self, uids, trash_folder='INBOX.Trash'):
+        self.move_messages(uids, trash_folder)
+
+    def move_messages(self, uids, destination_folder):
+        self.connection.copy(uids, destination_folder)
+        return self.connection.delete_messages(uids)
+
     def list_all_folders(self):
         '''
         for f in client.list_all_folders():
