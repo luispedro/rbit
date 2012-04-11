@@ -297,7 +297,7 @@
     <string>Ctrl+L</string>
    </property>
   </action>
-  <action name="actionAction_Trash">
+  <action name="action_Trash">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -339,7 +339,7 @@
   <connection>
    <sender>bTrash</sender>
    <signal>clicked()</signal>
-   <receiver>actionAction_Trash</receiver>
+   <receiver>action_Trash</receiver>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
