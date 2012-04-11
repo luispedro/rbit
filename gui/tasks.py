@@ -78,11 +78,12 @@ class UpdateMessages(RBitTask):
         client.close()
         self.done.emit()
 
-class TrashMessage(RBitTask):
-    def __init__(self, parent, message):
-        super(TrashMessage, self).__init__(parent)
+class MoveMessage(RBitTask):
+    def __init__(self, parent, message, target):
+        super(MoveMessage, self).__init__(parent)
         self.folder = message.folder
         self.uid = message.uid
+        self.target = target
 
     def perform(self):
         from rbit import config
@@ -91,8 +92,12 @@ class TrashMessage(RBitTask):
         cfg = config.Config('config', backend.create_session)
         client = imap.IMAPClient.from_config(cfg)
         client.select_folder(self.folder)
-        client.trash_messages([self.uid])
+        client.move_messages([self.uid], self.target)
         client.expunge()
         client.close()
         self.done.emit()
+
+class TrashMessage(MoveMessage):
+    def __init__(self, parent, message):
+        MoveMessage.__init__(self, parent, message, 'INBOX.Trash')
 
