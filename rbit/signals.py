@@ -26,9 +26,9 @@ def emit(name, args=(), kwargs=None):
     for f in _registry.get(name, []):
         f(*args, **kwargs)
 
-def register(name, f):
+def register(name, f, replace_all=False):
     '''
-    register(name, f)
+    register(name, f, replace_all=False)
 
     Register ``f`` as a handler for signal ``name``
 
@@ -37,12 +37,18 @@ def register(name, f):
     name : str
         Signal name
     f : callable
+    replace_all : boolean, optional
+        If ``replace_all``, then all previous signals registered for this event
+        are removed.
 
     See Also
     --------
     emit : function
     '''
-    if name not in _registry:
-        _registry[name] = []
-    _registry[name].append(f)
+    if replace_all:
+        _registry[name] = [f]
+    else:
+        if name not in _registry:
+            _registry[name] = []
+        _registry[name].append(f)
 

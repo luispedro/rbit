@@ -65,8 +65,12 @@ class UpdateMessages(QtCore.QObject):
         from rbit import config
         from rbit import backend
         from rbit import imap
+        from rbit.ml import predict
         cfg = config.Config('config', backend.create_session)
         self.status.emit('Updating messages from %s' % cfg.get('account', 'host'))
+
+        predict.init()
+        signals.register('new-message', predict.predict_inbox, replace_all=True)
 
         client = imap.IMAPClient.from_config(cfg)
         update_all_folders(client)
