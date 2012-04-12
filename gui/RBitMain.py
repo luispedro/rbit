@@ -79,6 +79,8 @@ class RBitMain(QtCore.QObject):
         update = UpdateMessages(self)
         update.status.connect(self.win.statusBar().showMessage)
         update.done.connect(lambda: self.win.statusBar().showMessage(self.win.tr("Sync complete"), 4000))
+        update.error.connect(lambda err: \
+                                self.win.statusBar().showMessage(self.win.tr("Error in sync: %s") % err, 4000))
         def updated(folder):
             if folder == self.foldername:
                 self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
@@ -94,6 +96,7 @@ class RBitMain(QtCore.QObject):
     def _trash_or_move(self, action):
         if self.active_message is None:
             return
+        tr = self.win.tr
         model = self.win.messagelist.model()
         model.messages.remove(self.active_message)
         if action == 'move':
@@ -102,11 +105,13 @@ class RBitMain(QtCore.QObject):
                     target = pred.value
                     break
             else:
-                self.win.statusBar().showMessage(self.win.tr("Could not auto-move message"), 4000)
+                self.win.statusBar().showMessage(tr("Could not auto-move message"), 4000)
                 return
             task = MoveMessage(self, self.active_message, target)
         else:
             task = TrashMessage(self, self.active_message)
+        task.error.connect(lambda err: \
+                            self.win.statusBar().showMessage(tr("Error in %s action: %s") % (tr(action),err), 4000))
         self.worker.spawn(task.perform)
         self.active_message = None
 

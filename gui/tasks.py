@@ -6,7 +6,7 @@ import Queue
 
 from rbit import signals
 from gevent import monkey
-# thread needs to be left alone
+# thread needs to be left alone as Qt handles those
 monkey.patch_all(thread=False)
 
 def run_from_queue(group, q):
@@ -49,8 +49,16 @@ class GEventLoop(QtCore.QThread):
         self.wait()
 
 class RBitTask(QtCore.QObject):
+    error = QtCore.Signal(str)
     status = QtCore.Signal(str)
     done = QtCore.Signal()
+
+    def perform(self):
+        try:
+            self._perform()
+            self.done.emit()
+        except Exception, err:
+            self.error.emit(str(err))
 
 class UpdateMessages(RBitTask):
     def __init__(self, parent):
@@ -61,7 +69,7 @@ class UpdateMessages(RBitTask):
         if code == 'imap-update':
             self.status.emit(message)
 
-    def perform(self):
+    def _perform(self):
         from rbit.sync import update_all_folders
         from rbit import config
         from rbit import backend
@@ -76,7 +84,6 @@ class UpdateMessages(RBitTask):
         client = imap.IMAPClient.from_config(cfg)
         update_all_folders(client)
         client.close()
-        self.done.emit()
 
 class MoveMessage(RBitTask):
     def __init__(self, parent, message, target):
@@ -85,7 +92,7 @@ class MoveMessage(RBitTask):
         self.uid = message.uid
         self.target = target
 
-    def perform(self):
+    def _perform(self):
         from rbit import config
         from rbit import backend
         from rbit import imap
@@ -95,7 +102,6 @@ class MoveMessage(RBitTask):
         client.move_messages([self.uid], self.target)
         client.expunge()
         client.close()
-        self.done.emit()
 
 class TrashMessage(MoveMessage):
     def __init__(self, parent, message):
