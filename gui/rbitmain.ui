@@ -253,6 +253,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew_Message"/>
+    <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -314,6 +316,14 @@
   <action name="actionAuto_Move">
    <property name="text">
     <string>Auto Move</string>
+   </property>
+  </action>
+  <action name="actionNew_Message">
+   <property name="text">
+    <string>New Message</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

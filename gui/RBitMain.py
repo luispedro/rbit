@@ -40,6 +40,7 @@ class RBitMain(QtCore.QObject):
         self.win.action_CheckMail.triggered.connect(self.check_mail)
         self.win.action_Trash.triggered.connect(self.trash)
         self.win.actionAuto_Move.triggered.connect(self.auto_move)
+        self.win.actionNew_Message.triggered.connect(self.new_message)
         self.worker = GEventLoop(self)
         self.worker.start()
 
@@ -109,6 +110,10 @@ class RBitMain(QtCore.QObject):
         self.worker.spawn(task.perform)
         self.active_message = None
 
+    def new_message(self):
+        from Composer import Composer
+        c = Composer(self)
+        c.show()
 
     @QtCore.Slot(str)
     def open_folder(self, foldername):
