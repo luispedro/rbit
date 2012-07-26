@@ -52,8 +52,8 @@ class index(object):
 
         Register signals for update of index
         '''
-        signals.register('new-message', lambda m: self.add([m]))
-        signals.register('delete-message', lambda m: self.add([m]))
+        signals.register(signals.NEW_MESSAGE, lambda m,_,_: self.add([m]))
+        signals.register(signals.DELETE_MESSAGE, lambda m: self.remove([m]))
 
     def search(self, q):
         '''

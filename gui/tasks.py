@@ -63,7 +63,7 @@ class RBitTask(QtCore.QObject):
 class UpdateMessages(RBitTask):
     def __init__(self, parent):
         super(UpdateMessages, self).__init__(parent)
-        signals.register('status', self.get_status)
+        signals.register(signals.STATUS, self.get_status)
 
     def get_status(self, code, message):
         if code == 'imap-update':
@@ -79,7 +79,7 @@ class UpdateMessages(RBitTask):
         self.status.emit('Updating messages from %s' % cfg.get('account', 'host'))
 
         predict.init()
-        signals.register('new-message', predict.predict_inbox, replace_all=True)
+        signals.register(signals.NEW_MESSAGE, predict.predict_inbox, replace_all=True)
 
         client = imap.IMAPClient.from_config(cfg)
         update_all_folders(client)

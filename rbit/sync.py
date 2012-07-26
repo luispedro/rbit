@@ -116,7 +116,7 @@ def get_text(m):
     return None
 
 def _s(m):
-    signals.emit('status', ('imap-update', m))
+    signals.emit(signals.STATUS, ('imap-update', m))
 
 def update_folder(client, folder, create_session=None):
     '''
@@ -164,7 +164,7 @@ def update_folder(client, folder, create_session=None):
     _s('Deleting removed message in folder %s...' % folder)
     for i,uid in enumerate(extra):
         m = session.query(models.Message).filter_by(folder=folder, uid=uid).first()
-        signals.emit('delete-message', [m])
+        signals.emit(signals.DELETE_MESSAGE, [m])
         for at in m.attachments:
             try:
                 unlink(at.filename)
@@ -186,7 +186,7 @@ def update_folder(client, folder, create_session=None):
         rfc822 = m[uid]['RFC822']
         flags = m[uid]['FLAGS']
         created = message_to_model(rfc822, folder, uid, flags)
-        signals.emit('new-message', [created[0], folder, uid], {'session':session})
+        signals.emit(signals.NEW_MESSAGE, [created[0], folder, uid], {'session':session})
         session.add_all(created)
         session.commit()
 
@@ -223,6 +223,6 @@ def update_all_folders(client, create_session=None):
     '''
     for folder in client.list_all_folders():
         n = update_folder(client, folder, create_session)
-        signals.emit('folder-update', (folder,))
+        signals.emit(signals.FOLDER_UPDATE, (folder,))
         _s('%s updates in %s' % (n,folder))
 

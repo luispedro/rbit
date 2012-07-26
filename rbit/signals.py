@@ -52,3 +52,8 @@ def register(name, f, replace_all=False):
             _registry[name] = []
         _registry[name].append(f)
 
+
+NEW_MESSAGE = 'new-message'
+DELETE_MESSAGE = 'delete-message'
+FOLDER_UPDATE = 'folder-update'
+STATUS = 'status'

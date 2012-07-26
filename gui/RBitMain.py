@@ -84,7 +84,7 @@ class RBitMain(QtCore.QObject):
         def updated(folder):
             if folder == self.foldername:
                 self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
-        signals.register('folder-update', updated)
+        signals.register(signals.FOLDER_UPDATE, updated)
         self.worker.spawn(update.perform)
 
     def trash(self):
