@@ -52,7 +52,7 @@ class index(object):
 
         Register signals for update of index
         '''
-        signals.register(signals.NEW_MESSAGE, lambda m,_,_: self.add([m]))
+        signals.register(signals.NEW_MESSAGE, lambda m,_f,_u: self.add([m]))
         signals.register(signals.DELETE_MESSAGE, lambda m: self.remove([m]))
 
     def search(self, q):
