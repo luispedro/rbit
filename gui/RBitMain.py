@@ -34,6 +34,7 @@ class RBitMain(QtCore.QObject):
 
         self.active_message = None
         self.foldername = None
+        self.in_check_mail = False
         self.win.messagelist.clicked.connect(self.set_message)
         self.win.action_Quit.triggered.connect(self.win.close)
         self.win.searchGo.clicked.connect(self.search)
@@ -76,11 +77,18 @@ class RBitMain(QtCore.QObject):
         self.set_messagelist(messages)
 
     def check_mail(self):
+        if self.in_check_mail:
+            return
         update = UpdateMessages(self)
         update.status.connect(self.win.statusBar().showMessage)
-        update.done.connect(lambda: self.win.statusBar().showMessage(self.win.tr("Sync complete"), 4000))
-        update.error.connect(lambda err: \
-                                self.win.statusBar().showMessage(self.win.tr("Error in sync: %s") % err, 4000))
+        @update.done.connect
+        def _done():
+            self.win.statusBar().showMessage(self.win.tr("Sync complete"), 4000)
+            self.in_check_mail = False
+        @update.error.connect
+        def _err(err):
+            self.win.statusBar().showMessage(self.win.tr("Error in sync: %s") % err, 4000)
+            self.in_check_mail = False
         def updated(folder):
             if folder == self.foldername:
                 self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
