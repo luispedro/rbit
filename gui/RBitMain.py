@@ -101,6 +101,10 @@ class RBitMain(QtCore.QObject):
     def auto_move(self):
         self._trash_or_move('move')
 
+    def update_active_message(self):
+        idx = self.win.messagelist.currentIndex()
+        self.set_message(idx)
+
     def _trash_or_move(self, action):
         if self.active_message is None:
             return
@@ -122,6 +126,7 @@ class RBitMain(QtCore.QObject):
                             self.win.statusBar().showMessage(tr("Error in %s action: %s") % (tr(action),err), 4000))
         self.worker.spawn(task.perform)
         self.active_message = None
+        self.update_active_message()
 
     def new_message(self):
         from Composer import Composer
