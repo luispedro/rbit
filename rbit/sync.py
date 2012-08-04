@@ -223,6 +223,6 @@ def update_all_folders(client, create_session=None):
     '''
     for folder in client.list_all_folders():
         n = update_folder(client, folder, create_session)
-        signals.emit(signals.FOLDER_UPDATE, (folder,))
+        signals.emit(signals.FOLDER_UPDATE, (folder,n))
         _s('%s updates in %s' % (n,folder))
 

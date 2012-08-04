@@ -89,10 +89,11 @@ class RBitMain(QtCore.QObject):
         def _err(err):
             self.win.statusBar().showMessage(self.win.tr("Error in sync: %s") % err, 4000)
             self.in_check_mail = False
-        def updated(folder):
-            if folder == self.foldername:
+
+        @signals.register_dec(signals.FOLDER_UPDATE)
+        def updated(folder, n):
+            if n != 0 and folder == self.foldername:
                 self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
-        signals.register(signals.FOLDER_UPDATE, updated)
         self.worker.spawn(update.perform)
 
     def trash(self):

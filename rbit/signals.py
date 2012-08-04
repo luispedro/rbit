@@ -52,6 +52,34 @@ def register(name, f, replace_all=False):
             _registry[name] = []
         _registry[name].append(f)
 
+def register_dec(name, replace_all=False):
+    '''
+    @register_dec(name, replace_all=False)
+    def f(..):
+        ...
+
+    Equivalent to::
+
+        def f(..):
+            ...
+        register(name, f, replace_all)
+
+    Parameters
+    ----------
+    name : str
+        Signal name
+    replace_all : boolean, optional
+        If ``replace_all``, then all previous signals registered for this event
+        are removed.
+
+    See Also
+    --------
+    register : function
+    emit : function
+    '''
+    from functools import partial
+    return partial(register, name, replace_all=replace_all)
+
 
 NEW_MESSAGE = 'new-message'
 DELETE_MESSAGE = 'delete-message'
