@@ -2,6 +2,7 @@
 # This file is part of rbit mail.
 from os import path
 from PySide import QtCore, QtGui, QtUiTools
+from PySide.QtWebKit import QWebView
 from PySidePlus import qopen
 
 from rbit import models
@@ -21,6 +22,10 @@ def search_messages(query):
             for f,u in index.search(query)]
 
 
+def _format_as_html(text):
+    if '<html>' in text or \
+        '<body>' in text: return text
+    return '<html><head></head><body><pre>%s</pre></html>' % text
 
 class RBitMain(QtCore.QObject):
     def __init__(self, parent=None):
@@ -57,7 +62,7 @@ class RBitMain(QtCore.QObject):
         self.win.from_.setText(m.from_)
         self.win.date.setText(str(m.date))
         self.win.subject.setText(m.subject)
-        self.win.mbody.setText(m.body)
+        self.win.mbody.setHtml(_format_as_html(m.body))
 
         while self.win.attachments.count():
             self.win.attachments.takeItem(0)
