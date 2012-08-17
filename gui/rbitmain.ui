@@ -215,14 +215,17 @@
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>TextLabel</string>
+            <widget class="QListWidget" name="attachments">
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="viewMode">
+              <enum>QListView::IconMode</enum>
              </property>
             </widget>
-           </item>
-           <item>
-            <widget class="QListWidget" name="attachments"/>
            </item>
           </layout>
          </widget>
