@@ -23,3 +23,18 @@ def test_load_model():
     yield load_commit, 'github'
     yield load_commit, 'unknown'
     yield load_commit, 'filename8'
+
+def test_list():
+    from rbit import messages
+    session = in_memory_sessionmaker()()
+    for uid,message in enumerate(['header8', 'github']):
+        session.add_all(message_to_model(_open(message+'.eml').read(), 'test', 12+uid, []))
+    session.commit()
+
+    assert len(messages.list_uids(create_session=(lambda:session))) == 2
+    assert len(messages.list_uids(folder='test',create_session=(lambda:session))) == 2
+    assert len(messages.list_uids(folder='nope',create_session=(lambda:session))) == 0
+    print messages.list_folders(create_session=(lambda:session))
+    assert messages.list_folders(create_session=(lambda:session)) == ['test']
+
+

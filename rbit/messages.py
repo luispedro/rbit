@@ -43,3 +43,41 @@ def list_messages(folder, create_session=None):
             .order_by(Message.date.desc()) \
             .all()
 
+def list_folders(create_session=None):
+    '''
+    fs = list_folders(create_session=None)
+
+    Parameters
+    ----------
+    create_session : callable
+
+    Returns
+    -------
+    fs : list of str
+        Folder names
+    '''
+    session = backend.call_create_session(create_session)
+    fs = session.query(Message.folder) \
+            .distinct() \
+            .all()
+    # fs is a list of 1-element tuples, so just flatten it:
+    return [f for f, in fs]
+
+def list_uids(folder=None, create_session=None):
+    '''
+    us = list_uids(folder={all folders}, create_session={backend.create_session})
+
+    Parameters
+    ----------
+    folder : str, optional
+    create_session : callable, optional
+
+    Returns
+    -------
+    us : list of int
+    '''
+    session = backend.call_create_session(create_session)
+    q = session.query(Message.uid)
+    if folder is not None:
+        q = q.filter_by(folder=folder)
+    return q.all()
