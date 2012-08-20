@@ -83,7 +83,10 @@ class RBitMain(QtCore.QObject):
 
     def check_mail(self):
         if self.in_check_mail:
+            self.win.statusBar().showMessage(self.win.tr("Already checking mail"), 4000)
             return
+
+        self.in_check_mail = True
         update = UpdateMessages(self)
         update.status.connect(self.win.statusBar().showMessage)
         @update.done.connect
