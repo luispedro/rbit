@@ -6,6 +6,7 @@ from rbit import models
 from rbit import signals
 from rbit.decode import decode_unicode
 from rbit.messages import load_message
+from rbit.tools import callonce
 
 def _attachments_dir(folder, mid, basedir=None):
     from os import path
@@ -118,6 +119,7 @@ def get_text(m):
 def _s(m):
     signals.emit(signals.STATUS, ('imap-update', m))
 
+@callonce()
 def update_folder(client, folder, create_session=None):
     '''
     nr_changes = update_folder(client, folder, create_session={backend.create_session})
