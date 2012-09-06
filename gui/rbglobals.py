@@ -7,7 +7,5 @@ from rbit import imap
 from rbit import models
 from rbit import index
 
-
 index = index.get_index()
 cfg = config.Config('config', backend.create_session)
-session = backend.create_session()

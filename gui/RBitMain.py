@@ -16,9 +16,9 @@ from messagelist import MessageList, MessageListItem
 
 
 def search_messages(query):
-    from rbglobals import session, index
+    from rbglobals import index
     return [
-        messages.load_message(f,u,lambda:session)
+        messages.load_message(f,u)
             for f,u in index.search(query)]
 
 
@@ -149,7 +149,6 @@ class RBitMain(QtCore.QObject):
 
     @QtCore.Slot()
     def update_folder(self):
-        from rbglobals import session
-        self.set_messagelist(messages.list_messages(self.foldername, lambda: session))
+        self.set_messagelist(messages.list_messages(self.foldername))
 
 
