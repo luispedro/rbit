@@ -43,6 +43,7 @@ def retrain_folder_model(create_session=None):
     ms = session.query(models.Message.folder, models.Message.mid).all()
     learner = multi_tree_learner(VWLearner(_basedir))
     if len(ms) > 0:
+        from time import time
         # The reason for the shuffle is to improve the learning
         # Without it, the online learner sees 1 1 1 1 1 1 1 ... 1 -1 -1 -1 -1 ... -1
         # which is likely to not be as good as a random mix of +/-1
@@ -52,6 +53,7 @@ def retrain_folder_model(create_session=None):
         model = learner.train(mids, labels)
         cfg = config.Config('machine-learning', create_session)
         cfg.set('folder-model', 'model', model)
+        cfg.set('folder-model', 'retrained-time', int(time()))
 
 def cleanup_models(basedir):
     '''
