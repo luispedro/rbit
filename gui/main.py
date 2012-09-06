@@ -17,13 +17,13 @@ def main(argv):
     app.aboutToQuit.connect(main.worker.kill)
     main.win.show()
     if cfg.has_entry('account', 'user'):
-        main.open_folder('INBOX')
-        main.win.action_CheckMail.trigger()
+        foldername = 'INBOX'
+        account = '{0}@{1}'.format(cfg.get('account', 'user'), cfg.get('account', 'host'))
+        main.open_folder(account, foldername)
     else:
         dialog = config_dialog()
         dialog.accepted.connect(main.win.action_CheckMail.trigger)
         dialog.show()
-        main.foldername = 'INBOX'
     app.exec_()
 
 if __name__ == '__main__':

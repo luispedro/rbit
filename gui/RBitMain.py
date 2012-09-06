@@ -38,6 +38,7 @@ class RBitMain(QtCore.QObject):
             self.win = loader.load(uifile)
 
         self.active_message = None
+        self.account = None
         self.foldername = None
         self.in_check_mail = False
         self.win.messagelist.clicked.connect(self.set_message)
@@ -99,8 +100,8 @@ class RBitMain(QtCore.QObject):
             self.in_check_mail = False
 
         @signals.register_dec(signals.FOLDER_UPDATE)
-        def updated(folder, n):
-            if n != 0 and folder == self.foldername:
+        def updated(account, folder, n):
+            if n != 0 and acount == self.account and folder == self.foldername:
                 self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
         self.worker.spawn(update.perform)
 
@@ -142,13 +143,14 @@ class RBitMain(QtCore.QObject):
         c = Composer(self)
         c.show()
 
-    @QtCore.Slot(str)
-    def open_folder(self, foldername):
+    @QtCore.Slot(str, str)
+    def open_folder(self, account, foldername):
+        self.account = account
         self.foldername = foldername
         self.update_folder()
 
     @QtCore.Slot()
     def update_folder(self):
-        self.set_messagelist(messages.list_messages(self.foldername))
+        self.set_messagelist(messages.list_messages(self.account, self.foldername))
 
 
