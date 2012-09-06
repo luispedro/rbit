@@ -11,7 +11,7 @@ from rbit import index
 from rbit import signals
 from rbit import backend
 
-from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage
+from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage, RetrainFolderModel
 from messagelist import MessageList, MessageListItem
 
 
@@ -50,6 +50,11 @@ class RBitMain(QtCore.QObject):
         self.win.actionNew_Message.triggered.connect(self.new_message)
         self.worker = GEventLoop(self)
         self.worker.start()
+
+        from rbit.ml import predict
+        if not predict.init():
+            rt = RetrainFolderModel(self)
+            self.worker.spawn(rt.perform)
 
     def set_messagelist(self, messages):
         messages = MessageList(messages)

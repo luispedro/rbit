@@ -60,6 +60,15 @@ class RBitTask(QtCore.QObject):
         except Exception, err:
             self.error.emit(str(err))
 
+class RetrainFolderModel(RBitTask):
+    def _perform(self):
+        from rbit.ml import train, predict
+        print 'retraining...'
+        self.status.emit('Retraining folder model...')
+        train.retrain_folder_model()
+        print 'retrained.'
+        predict.init()
+
 class UpdateMessages(RBitTask):
     def __init__(self, parent):
         super(UpdateMessages, self).__init__(parent)
@@ -78,7 +87,6 @@ class UpdateMessages(RBitTask):
         cfg = config.Config('config', backend.create_session)
         self.status.emit('Updating messages from %s' % cfg.get('account', 'host'))
 
-        predict.init()
         signals.register(signals.NEW_MESSAGE, predict.predict_inbox, replace_all=True)
 
         client = imap.IMAPClient.from_config(cfg)
