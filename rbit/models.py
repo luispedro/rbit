@@ -131,6 +131,7 @@ class Folder(Base):
     fid = Column(Integer, primary_key=True)
     name = Column(String(128), index=True)
     folder = Column(String, index=True)
+    account = Column(String, index=True)
     uidvalidity = Column(Integer)
     highestmodseq = Column(Integer)
 
