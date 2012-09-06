@@ -9,13 +9,23 @@ model = None
 
 def init():
     '''
-    init()
+    val = init()
 
     Loads model from database
+
+    Returns
+    -------
+    val : boolean
+        Whether a model exists
     '''
-    global model
-    cfg = config.Config('machine-learning', None)
-    model = cfg.get('folder-model', 'model')
+    try:
+        global model
+        cfg = config.Config('machine-learning', None)
+        model = cfg.get('folder-model', 'model')
+        return True
+    except:
+        return False
+
 
 def predict_inbox(message, folder, _uid, **kwargs):
     '''
@@ -25,10 +35,11 @@ def predict_inbox(message, folder, _uid, **kwargs):
     '''
     if folder != u'INBOX':
         return
-    session = kwargs['session']
-    value,folder = model.apply(message)
-    pred = models.Prediction(type='folder', strength=value, value=folder)
-    message.predictions.append(pred)
-    session.add(pred)
+    if model is not None:
+        session = kwargs['session']
+        value,folder = model.apply(message)
+        pred = models.Prediction(type='folder', strength=value, value=folder)
+        message.predictions.append(pred)
+        session.add(pred)
 
 

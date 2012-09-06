@@ -6,6 +6,7 @@ from os import path
 from rbit import models
 from rbit import config
 from rbit.backend import call_create_session
+from rbit.tools import callonce
 
 from rbit.ml.multi import multi_tree_learner
 from rbit.ml.vw_learner import VWLearner
@@ -19,6 +20,7 @@ def _maybemkdir(dir):
 
 _basedir = path.expanduser('~/.local/share/rbit/vw/')
 
+@callonce()
 def retrain_folder_model(create_session=None):
     '''
     model = retrain_folder_model(create_session={backend.create_session})
@@ -39,17 +41,17 @@ def retrain_folder_model(create_session=None):
 
     session = call_create_session(create_session)
     ms = session.query(models.Message.folder, models.Message.mid).all()
-    # The reason for the shuffle is to improve the learning
-    # Without it, the online learner sees 1 1 1 1 1 1 1 ... 1 -1 -1 -1 -1 ... -1
-    # which is likely to not be as good as a random mix of +/-1
-    random.shuffle(ms)
-    labels = [m.folder for m in ms]
     learner = multi_tree_learner(VWLearner(_basedir))
-    mids = [m.mid for m in ms]
-    model = learner.train(mids, labels)
-
-    cfg = config.Config('machine-learning', create_session)
-    cfg.set('folder-model', 'model', model)
+    if len(ms) > 0:
+        # The reason for the shuffle is to improve the learning
+        # Without it, the online learner sees 1 1 1 1 1 1 1 ... 1 -1 -1 -1 -1 ... -1
+        # which is likely to not be as good as a random mix of +/-1
+        random.shuffle(ms)
+        labels = [m.folder for m in ms]
+        mids = [m.mid for m in ms]
+        model = learner.train(mids, labels)
+        cfg = config.Config('machine-learning', create_session)
+        cfg.set('folder-model', 'model', model)
 
 def cleanup_models(basedir):
     '''
@@ -57,8 +59,11 @@ def cleanup_models(basedir):
 
     Delete all model associated files
     '''
-    from shutil import rmtree
-    rmtree(basedir)
+    try:
+        from shutil import rmtree
+        rmtree(basedir)
+    except OSError:
+        pass
 
 if __name__ == '__main__':
     retrain_folder_model()
