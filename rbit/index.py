@@ -25,7 +25,12 @@ class index(object):
         '''
         for m in messages:
             writer = self.ix.writer()
-            writer.add_document(body=m.body, subject=m.subject, from_=m.from_, recipient=m.to, date=m.date, path=('%s/%s' % (m.folder,m.uid)))
+            writer.add_document(body=m.body,
+                                    subject=m.subject,
+                                    from_=m.from_,
+                                    recipient=m.to,
+                                    date=m.date,
+                                    path=('{0}/{1}/{2}'.format(m.account, m.folder, m.uid)))
             writer.commit()
 
 
@@ -42,7 +47,7 @@ class index(object):
         '''
         for m in messages:
             writer = self.ix.writer()
-            writer.delete_by_term('path', '%s/%s' % (m.folder,m.uid))
+            writer.delete_by_term('path', '{0}/{1}/{2}'.format(m.account, m.folder, m.uid))
             writer.commit()
 
 
@@ -57,16 +62,16 @@ class index(object):
 
     def search(self, q):
         '''
-        for folder,uid in index.search(q):
+        for account,folder,uid in index.search(q):
             ...
         '''
         searcher = self.ix.searcher()
         q = unicode(q)
         q = self.parser.parse(q)
         for r in searcher.search(q):
-            folder,uid = r['path'].split('/')
+            account,folder,uid = r['path'].split('/')
             uid = int(uid)
-            yield folder, uid
+            yield account,folder, uid
 
 
 def get_index():
