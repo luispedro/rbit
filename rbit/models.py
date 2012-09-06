@@ -36,6 +36,7 @@ class Message(Base):
 
     mid = Column(Integer, primary_key=True)
     uid = Column(Integer, index=True)
+    account = Column(String)
     folder = Column(String, index=True)
 
     from_ = Column(String)
@@ -128,7 +129,8 @@ class Message(Base):
 class Folder(Base):
     __tablename__ = 'folder'
     fid = Column(Integer, primary_key=True)
-    name = Column(String(64), index=True)
+    name = Column(String(128), index=True)
+    folder = Column(String, index=True)
     uidvalidity = Column(Integer)
     highestmodseq = Column(Integer)
 

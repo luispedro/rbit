@@ -8,11 +8,12 @@ from rbit.decode import decode_unicode
 from rbit.messages import load_message
 from rbit.tools import callonce
 
-def _attachments_dir(folder, mid, basedir=None):
+def _attachments_dir(account, folder, mid, basedir=None):
     from os import path
     if basedir is None:
         basedir = path.join(
                 path.expanduser('~/.local/share/rbit'),
+                account,
                 'attachments')
     return path.join(basedir, 'message-%s-%s' % (folder, mid))
 
@@ -50,7 +51,7 @@ def save_attachment(folder, mid, m, basedir=None):
             output.write(m.get_payload(decode=True))
     return filename
 
-def message_to_model(message, folder, uid, flags):
+def message_to_model(message, account, folder, uid, flags):
     '''
     message = retrieve_model(message, folder, uid)
 
@@ -60,6 +61,7 @@ def message_to_model(message, folder, uid, flags):
     ----------
     message : str
         RFC822 representation of message
+    account : str
     folder : str
     uid : int
         IMAP UID
@@ -68,6 +70,7 @@ def message_to_model(message, folder, uid, flags):
     '''
     m = email.message_from_string(message)
     model = models.Message.from_email_message(m, uid)
+    model.account = account
     model.folder = folder
     created = [model]
     for inner in m.walk():
@@ -142,17 +145,22 @@ def update_folder(client, folder, create_session=None):
     (highestmodseq,) = status['HIGHESTMODSEQ']
     highestmodseq = int(highestmodseq)
 
-    folderm = session.query(models.Folder).filter_by(name=folder).first()
+    account = client.account
+    folderm = session \
+                .query(models.Folder) \
+                .filter_by(name=folder) \
+                .filter_by(account=account) \
+                .first()
     if folderm is not None and folderm.uidvalidity != uidvalidity:
         # UIDs are INVALID
         # We need to clear the cache!
         session.delete(folderm)
-        q = session.query(models.Message).filter_by(folder=folder).delete()
+        q = session.query(models.Message).filter_by(account=account).filter_by(folder=folder).delete()
         session.commit()
         folderm = None
 
     if folderm is None:
-        folderm = models.Folder(name=folder, uidvalidity=uidvalidity)
+        folderm = models.Folder(name=folder, account=account, uidvalidity=uidvalidity)
         session.add(folderm)
         prevmodseq = None
     else:
@@ -160,12 +168,12 @@ def update_folder(client, folder, create_session=None):
 
     messages = set(client.list_messages())
     current = set(uid for uid, in
-                    session.query(models.Message.uid).filter_by(folder=folder).all())
+                    session.query(models.Message.uid).filter_by(account=account).filter_by(folder=folder).all())
 
     extra = current - messages
     _s('Deleting removed message in folder %s...' % folder)
     for i,uid in enumerate(extra):
-        m = session.query(models.Message).filter_by(folder=folder, uid=uid).first()
+        m = session.query(models.Message).filter_by(folder=folder, account=account, uid=uid).one()
         signals.emit(signals.DELETE_MESSAGE, [m])
         for at in m.attachments:
             try:
@@ -187,7 +195,7 @@ def update_folder(client, folder, create_session=None):
         m = client.retrieve(folder, uid)
         rfc822 = m[uid]['RFC822']
         flags = m[uid]['FLAGS']
-        created = message_to_model(rfc822, folder, uid, flags)
+        created = message_to_model(rfc822, account, folder, uid, flags)
         signals.emit(signals.NEW_MESSAGE, [created[0], folder, uid], {'session':session})
         session.add_all(created)
         session.commit()

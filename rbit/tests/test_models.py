@@ -16,7 +16,7 @@ def test_from_email_message():
 def test_load_model():
     def load_commit(message):
         session = in_memory_sessionmaker()()
-        session.add_all(message_to_model(_open(message+'.eml').read(), 'test', 128, []))
+        session.add_all(message_to_model(_open(message+'.eml').read(), 'acc', 'test', 128, []))
         session.commit()
     yield load_commit, 'header8'
     yield load_commit, 'bad-date'
@@ -28,13 +28,14 @@ def test_list():
     from rbit import messages
     session = in_memory_sessionmaker()()
     for uid,message in enumerate(['header8', 'github']):
-        session.add_all(message_to_model(_open(message+'.eml').read(), 'test', 12+uid, []))
+        session.add_all(message_to_model(_open(message+'.eml').read(), 'acc', 'test', 12+uid, []))
     session.commit()
 
-    assert len(messages.list_uids(create_session=(lambda:session))) == 2
-    assert len(messages.list_uids(folder='test',create_session=(lambda:session))) == 2
-    assert len(messages.list_uids(folder='nope',create_session=(lambda:session))) == 0
-    print messages.list_folders(create_session=(lambda:session))
-    assert messages.list_folders(create_session=(lambda:session)) == ['test']
+    assert len(messages.list_uids('acc', create_session=(lambda:session))) == 2
+    assert len(messages.list_uids('nope', create_session=(lambda:session))) == 0
+    assert len(messages.list_uids('acc', folder='test',create_session=(lambda:session))) == 2
+    assert len(messages.list_uids('acc', folder='nope',create_session=(lambda:session))) == 0
+    assert messages.list_folders('acc', create_session=(lambda:session)) == ['test']
+    assert messages.list_folders('nope', create_session=(lambda:session)) == []
 
 

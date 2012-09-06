@@ -8,6 +8,7 @@ class IMAPClient(object):
         self.connection = imapclient.IMAPClient(host, ssl=True)
         self.connection.login(username, password)
         self.folder = None
+        self.account = '{0}@{1}'.format(username, host)
 
     @staticmethod
     def from_config(cfg):
