@@ -17,9 +17,9 @@ def _attachments_dir(account, folder, mid, basedir=None):
                 'attachments')
     return path.join(basedir, 'message-%s-%s' % (folder, mid))
 
-def save_attachment(folder, mid, m, basedir=None):
+def save_attachment(account, folder, mid, m, basedir=None):
     '''
-    save_attachment(folder, mid, m)
+    save_attachment(account, folder, mid, m)
 
     If m represents an attachment from message `mid` in folder `folder`, save
     it.
@@ -34,7 +34,7 @@ def save_attachment(folder, mid, m, basedir=None):
         The attachment
     '''
     from os import path, makedirs
-    dirname = _attachments_dir(folder, mid, basedir)
+    dirname = _attachments_dir(account, folder, mid, basedir)
     filename = decode_unicode(m.get_filename(), m.get_charsets())
     if not filename:
         filename = 'attachment'
@@ -79,7 +79,7 @@ def message_to_model(message, account, folder, uid, flags):
             model.body = text
         else:
             if inner.get_filename() is not None and inner.get_content_type() != 'application/pgp-signature':
-                f = save_attachment(folder, uid, inner)
+                f = save_attachment(account, folder, uid, inner)
                 att = models.Attachment(filename=f)
                 model.attachments.append(att)
                 created.append(att)
@@ -182,7 +182,7 @@ def update_folder(client, folder, create_session=None):
                 pass
             session.delete(at)
         try:
-            rmdir(_attachments_dir(m.folder, m.uid))
+            rmdir(_attachments_dir(account, m.folder, m.uid))
         except OSError:
             pass
 
@@ -233,6 +233,6 @@ def update_all_folders(client, create_session=None):
     '''
     for folder in client.list_all_folders():
         n = update_folder(client, folder, create_session)
-        signals.emit(signals.FOLDER_UPDATE, (folder,n))
+        signals.emit(signals.FOLDER_UPDATE, (client.account, folder,n))
         _s('%s updates in %s' % (n,folder))
 
