@@ -37,9 +37,6 @@ class RBitMain(QtCore.QObject):
         with qopen(uifilepath) as uifile:
             self.win = loader.load(uifile)
 
-        from rbglobals import index
-        index.register()
-
         self.active_message = None
         self.account = None
         self.foldername = None

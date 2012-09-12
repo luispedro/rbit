@@ -84,10 +84,12 @@ class UpdateMessages(RBitTask):
         from rbit import backend
         from rbit import imap
         from rbit.ml import predict
+        from rbglobals import index
         cfg = config.Config('config', backend.create_session)
         self.status.emit('Updating messages from %s' % cfg.get('account', 'host'))
 
         signals.register(signals.NEW_MESSAGE, predict.predict_inbox, replace_all=True)
+        index.register()
 
         client = imap.IMAPClient.from_config(cfg)
         update_all_folders(client)
