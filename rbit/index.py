@@ -1,6 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
+from __future__ import print_function
 from rbit import models
 from rbit import signals
 from rbit.backend import create_session
@@ -30,7 +31,7 @@ class index(object):
                                     from_=m.from_,
                                     recipient=m.to,
                                     date=m.date,
-                                    path=('{0}/{1}/{2}'.format(m.account, m.folder, m.uid)))
+                                    path=(u'{0}/{1}/{2}'.format(m.account, m.folder, m.uid)))
             writer.commit()
 
 
@@ -57,7 +58,7 @@ class index(object):
 
         Register signals for update of index
         '''
-        signals.register(signals.NEW_MESSAGE, lambda m,_f,_u: self.add([m]))
+        signals.register(signals.NEW_MESSAGE, lambda m,_f,_u, **kwargs: self.add([m]))
         signals.register(signals.DELETE_MESSAGE, lambda m: self.remove([m]))
 
     def search(self, q):
