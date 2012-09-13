@@ -1,6 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
+from __future__ import print_function
 from PySide import QtCore
 import Queue
 
@@ -57,16 +58,17 @@ class RBitTask(QtCore.QObject):
         try:
             self._perform()
             self.done.emit()
-        except Exception, err:
+        except Exception as err:
+            from sys import stderr
+            import traceback
             self.error.emit(str(err))
+            traceback.print_exc(file=stderr)
 
 class RetrainFolderModel(RBitTask):
     def _perform(self):
         from rbit.ml import train, predict
-        print 'retraining...'
         self.status.emit('Retraining folder model...')
         train.retrain_folder_model()
-        print 'retrained.'
         predict.init()
 
 class UpdateMessages(RBitTask):
