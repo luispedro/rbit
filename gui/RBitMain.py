@@ -48,6 +48,7 @@ class RBitMain(QtCore.QObject):
         self.win.action_Trash.triggered.connect(self.trash)
         self.win.actionAuto_Move.triggered.connect(self.auto_move)
         self.win.actionNew_Message.triggered.connect(self.new_message)
+        self.win.attachments.itemDoubleClicked.connect(self.attachment_open)
         self.worker = GEventLoop(self)
         self.worker.start()
         self.session = backend.create_session()
@@ -148,6 +149,13 @@ class RBitMain(QtCore.QObject):
         from Composer import Composer
         c = Composer(self)
         c.show()
+
+    @QtCore.Slot(QtGui.QListWidgetItem)
+    def attachment_open(self, item):
+        from PySide.QtGui import QDesktopServices
+        from PySide.QtCore import QUrl
+        path = item.data(QtCore.Qt.DisplayRole)
+        QDesktopServices.openUrl(QUrl('file://' + path))
 
     @QtCore.Slot(str, str)
     def open_folder(self, account, foldername):
