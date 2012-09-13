@@ -108,7 +108,7 @@ class RBitMain(QtCore.QObject):
 
         @signals.register_dec(signals.FOLDER_UPDATE)
         def updated(account, folder, n):
-            if n != 0 and acount == self.account and folder == self.foldername:
+            if n != 0 and account == self.account and folder == self.foldername:
                 self.metaObject().invokeMethod(self, 'update_folder', QtCore.Qt.QueuedConnection)
         self.worker.spawn(update.perform)
 
