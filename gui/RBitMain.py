@@ -50,6 +50,7 @@ class RBitMain(QtCore.QObject):
         self.win.actionNew_Message.triggered.connect(self.new_message)
         self.worker = GEventLoop(self)
         self.worker.start()
+        self.session = backend.create_session()
 
         from rbit.ml import predict
         if not predict.init():
@@ -156,6 +157,6 @@ class RBitMain(QtCore.QObject):
 
     @QtCore.Slot()
     def update_folder(self):
-        self.set_messagelist(messages.list_messages(self.account, self.foldername))
+        self.set_messagelist(messages.list_messages(self.account, self.foldername, create_session=lambda:self.session))
 
 
