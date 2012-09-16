@@ -204,7 +204,7 @@ def update_folder(client, folder, create_session=None):
         _s('Updating flags for `%s`...' % folder)
         changed = client.fetch_flags_since(prevmodseq)
         for uid in changed:
-            m = load_message(folder, uid, lambda: session)
+            m = load_message(account, folder, uid, lambda: session)
             rfs = set(changed[uid]['FLAGS'])
             lfs = set(f.flag for f in m.flags)
             for f in m.flags:
