@@ -247,13 +247,20 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionNew_Message"/>
     <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
+   <widget class="QMenu" name="menuMaintnance">
+    <property name="title">
+     <string>&amp;Maintenance</string>
+    </property>
+    <addaction name="actionRetrain_Auto_Move"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuMaintnance"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -320,6 +327,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionRetrain_Auto_Move">
+   <property name="text">
+    <string>Retrain Auto Move</string>
    </property>
   </action>
  </widget>

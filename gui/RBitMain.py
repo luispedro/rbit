@@ -48,6 +48,7 @@ class RBitMain(QtCore.QObject):
         self.win.action_Trash.triggered.connect(self.trash)
         self.win.actionAuto_Move.triggered.connect(self.auto_move)
         self.win.actionNew_Message.triggered.connect(self.new_message)
+        self.win.actionRetrain_Auto_Move.triggered.connect(self.retrain_auto_move)
         self.win.attachments.itemDoubleClicked.connect(self.attachment_open)
         self.worker = GEventLoop(self)
         self.worker.start()
@@ -148,6 +149,12 @@ class RBitMain(QtCore.QObject):
         from Composer import Composer
         c = Composer(self)
         c.show()
+
+    def retrain_auto_move(self):
+        task = RetrainFolderModel(self)
+        task.error.connect(lambda err: \
+                            self.win.statusBar().showMessage(tr("Error in retraining folder model {0}.").format(err), 4000))
+        self.worker.spawn(task.perform)
 
     @QtCore.Slot(QtGui.QListWidgetItem)
     def attachment_open(self, item):
