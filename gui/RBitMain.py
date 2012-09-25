@@ -15,11 +15,11 @@ from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage, Retrain
 from messagelist import MessageList, MessageListItem
 
 
-def search_messages(query):
+def search_messages(query, session):
     from rbglobals import index
     return [
-        messages.load_message(f,u)
-            for f,u in index.search(query)]
+        messages.load_message(a,f,u, create_session=(lambda : session))
+            for a,f,u in index.search(query)]
 
 
 def _format_as_html(text):
@@ -85,7 +85,8 @@ class RBitMain(QtCore.QObject):
 
     def search(self):
         q = self.win.searchBox.text()
-        messages = search_messages(q)
+        self.session = backend.create_session()
+        messages = search_messages(q, self.session)
         self.win.statusBar().showMessage(self.win.tr('Found %s messages') % len(messages))
         self.set_messagelist(messages)
 
