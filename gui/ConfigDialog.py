@@ -19,6 +19,7 @@ def config_dialog():
 
     def sync_back():
         cfg.set('account', 'host', dialog.hostname.text())
+        cfg.set('account', 'port', dialog.port.text())
         cfg.set('account', 'user', dialog.username.text())
         cfg.set('account', 'password', dialog.password.text())
     dialog.accepted.connect(sync_back)
