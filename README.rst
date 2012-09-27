@@ -13,4 +13,6 @@ have ``pip`` installed, but you already did that, right?)::
 
     pip install sqlalchemy
     pip install imapclient
+    pip install gevent
+    pip install whoosh
 
