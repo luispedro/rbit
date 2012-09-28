@@ -4,8 +4,9 @@
 import imapclient
 
 class IMAPClient(object):
-    def __init__(self, host, port, username, password):
-        self.connection = imapclient.IMAPClient(host, port=port, ssl=True)
+    def __init__(self, host, port, username, password, ssl=True):
+        port = int(port)
+        self.connection = imapclient.IMAPClient(host, port=port, ssl=ssl)
         self.connection.login(username, password)
         self.folder = None
         self.account = '{0}@{1}'.format(username, host)
