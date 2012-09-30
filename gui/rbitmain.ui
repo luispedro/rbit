@@ -132,7 +132,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>From</string>
+            <string>&lt;b&gt;From&lt;/b&gt;</string>
            </property>
           </widget>
          </item>
@@ -152,7 +152,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Subject</string>
+            <string>&lt;b&gt;Subject&lt;/b&gt;</string>
            </property>
           </widget>
          </item>
@@ -172,7 +172,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Date</string>
+            <string>&lt;b&gt;Date&lt;/b&gt;</string>
            </property>
           </widget>
          </item>
