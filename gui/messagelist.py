@@ -48,7 +48,7 @@ class MessageListItem(QtGui.QItemDelegate):
         font = painter.font()
         font.setWeight(QtGui.QFont.Bold)
         painter.setFont(font)
-        painter.drawText(rect, '%-8s %s ::: %s    -> %s' % (flagstr, m.from_, m.subject, predictions))
+        painter.drawText(rect, QtCore.Qt.TextSingleLine, u'{0:<8} {1} ::: {2}    -> {3}'.format(flagstr, m.from_, m.subject, predictions))
         painter.restore()
         rect.setTop(rect.top() + 12)
         painter.drawText(rect, QtCore.Qt.TextSingleLine, m.body)
