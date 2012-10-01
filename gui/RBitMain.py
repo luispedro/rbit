@@ -19,7 +19,7 @@ def search_messages(query, session):
     from rbglobals import index
     return [
         messages.load_message(a,f,u, create_session=(lambda : session))
-            for a,f,u in index.search(query)]
+            for a,f,u in index.search(query, limit=128)]
 
 
 def _format_as_html(text):
