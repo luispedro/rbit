@@ -6,11 +6,12 @@ from PySide import QtCore
 import Queue
 
 from rbit import signals
-from gevent import monkey
-# thread needs to be left alone as Qt handles those
-monkey.patch_all(thread=False)
 
 def run_from_queue(group, q):
+    from gevent import monkey
+    # thread needs to be left alone as Qt handles those
+    monkey.patch_all(thread=False)
+
     for message in q:
         if message == 'quit':
             group.kill()
