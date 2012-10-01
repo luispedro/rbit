@@ -61,18 +61,18 @@ class index(object):
         signals.register(signals.NEW_MESSAGE, lambda m,_f,_u, **kwargs: self.add([m]))
         signals.register(signals.DELETE_MESSAGE, lambda m: self.remove([m]))
 
-    def search(self, q):
+    def search(self, q, limit=10):
         '''
-        for account,folder,uid in index.search(q):
+        for account,folder,uid in index.search(q, limit=10):
             ...
         '''
-        searcher = self.ix.searcher()
-        q = unicode(q)
-        q = self.parser.parse(q)
-        for r in searcher.search(q):
-            account,folder,uid = r['path'].split('/')
-            uid = int(uid)
-            yield account,folder, uid
+        with self.ix.searcher() as searcher:
+            q = unicode(q)
+            q = self.parser.parse(q)
+            for r in searcher.search(q, limit=limit):
+                account,folder,uid = r['path'].split('/')
+                uid = int(uid)
+                yield account,folder, uid
 
 
 def get_index():
