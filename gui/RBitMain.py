@@ -54,9 +54,9 @@ class RBitMain(QtCore.QObject):
         self.worker.start()
 
         from rbit.ml import predict
+
         if not predict.init():
-            rt = RetrainFolderModel(self)
-            self.worker.spawn(rt.perform)
+            self.retrain_auto_move()
 
     def set_messagelist(self, messages):
         messages = MessageList(messages)
@@ -153,6 +153,7 @@ class RBitMain(QtCore.QObject):
 
     def retrain_auto_move(self):
         task = RetrainFolderModel(self)
+        tr = self.win.tr
         task.error.connect(lambda err: \
                             self.win.statusBar().showMessage(tr("Error in retraining folder model {0}.").format(err), 4000))
         self.worker.spawn(task.perform)
