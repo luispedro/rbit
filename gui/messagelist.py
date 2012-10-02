@@ -1,6 +1,8 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 from PySide import QtGui, QtCore
+from rbit.html2text import html2text
+import re
 
 class MessageList(QtCore.QAbstractListModel):
     def __init__(self, messages):
@@ -51,7 +53,14 @@ class MessageListItem(QtGui.QItemDelegate):
         painter.drawText(rect, QtCore.Qt.TextSingleLine, u'{0:<8} {1} ::: {2}    -> {3}'.format(flagstr, m.from_, m.subject, predictions))
         painter.restore()
         rect.setTop(rect.top() + 12)
-        painter.drawText(rect, QtCore.Qt.TextSingleLine, m.body)
+        text = html2text(m.body)
+        text = text.strip()
+        text = re.sub(r'\s+', ' ', text)
+        try:
+            painter.drawText(rect, QtCore.Qt.TextSingleLine, text)
+        except UnicodeEncodeError: # I am not sure why this happens, but it sometimes does
+            text = text.encode('utf-8')
+            painter.drawText(rect, QtCore.Qt.TextSingleLine, text)
         rect.setTop(rect.top() + 12 + 4)
         painter.drawLine(rect.left(), rect.top(), (rect.left()+rect.right())//2, rect.top())
     
