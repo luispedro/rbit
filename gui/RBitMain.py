@@ -60,6 +60,8 @@ class RBitMain(QtCore.QObject):
 
     def setup_folder_list(self):
         fl = self.win.folderList
+        if fl.topLevelItemCount() > 0:
+            return
         QTreeW = QtGui.QTreeWidgetItem
         nodes = {}
         folders = [f.split('.')
@@ -73,6 +75,15 @@ class RBitMain(QtCore.QObject):
             else:
                 par = nodes[tuple(f[:-1])]
                 par.addChild(ch)
+
+        @fl.itemClicked.connect
+        def dbclick_folder(item, _column):
+            path = []
+            while item is not None:
+                path.append(item.data(0,0))
+                item = item.parent()
+            foldername = '.'.join(reversed(path))
+            self.open_folder(self.account, foldername)
 
 
     def set_messagelist(self, messages):
