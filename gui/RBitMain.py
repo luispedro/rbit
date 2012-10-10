@@ -96,6 +96,7 @@ class RBitMain(QtCore.QObject):
             self.set_message(messages.createIndex(0,0))
 
     def set_message(self, index):
+        from os import path
         m = self.win.messagelist.model().messages[index.row()]
         self.win.from_.setText(m.from_)
         self.win.date.setText(str(m.date))
@@ -105,8 +106,13 @@ class RBitMain(QtCore.QObject):
         while self.win.attachments.count():
             self.win.attachments.takeItem(0)
 
+        anyattachment = False
         for at in m.attachments:
             self.win.attachments.addItem(at.filename)
+            anyattachment = True
+        if anyattachment:
+            self.win.attachments.addItem(path.dirname(at.filename))
+
         self.win.tabWidget.setTabText(
             self.win.tabWidget.indexOf(self.win.tab_attach),
             QtGui.QApplication.translate("RBitMain", "Attachments (%s)", None, QtGui.QApplication.UnicodeUTF8) % len(m.attachments)
