@@ -58,6 +58,23 @@ class RBitMain(QtCore.QObject):
         if not predict.init():
             self.retrain_auto_move()
 
+    def setup_folder_list(self):
+        fl = self.win.folderList
+        QTreeW = QtGui.QTreeWidgetItem
+        nodes = {}
+        folders = [f.split('.')
+                     for f in messages.list_folders(self.account)]
+        folders.sort(key=len)
+        for f in folders:
+            ch = QTreeW([f[-1]])
+            nodes[tuple(f)] = ch
+            if len(f) == 1:
+                fl.addTopLevelItem(ch)
+            else:
+                par = nodes[tuple(f[:-1])]
+                par.addChild(ch)
+
+
     def set_messagelist(self, messages):
         messages = MessageList(messages)
         self.win.messagelist.setModel(messages)
@@ -170,6 +187,7 @@ class RBitMain(QtCore.QObject):
         self.account = account
         self.foldername = foldername
         self.update_folder()
+        self.setup_folder_list()
 
     @QtCore.Slot()
     def update_folder(self):
