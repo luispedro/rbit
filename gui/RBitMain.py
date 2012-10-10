@@ -75,7 +75,9 @@ class RBitMain(QtCore.QObject):
             else:
                 par = nodes[tuple(f[:-1])]
                 par.addChild(ch)
+                fl.expandItem(par)
 
+        fl.sortByColumn(0, QtCore.Qt.AscendingOrder)
         @fl.itemClicked.connect
         def dbclick_folder(item, _column):
             path = []
