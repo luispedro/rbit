@@ -50,7 +50,7 @@ def test_attachment():
         m = m.get_payload()[1]
         for inner in m.walk():
             if inner.get_filename():
-                f = save_attachment('INBOX', 8, inner)
+                f = save_attachment('test-account', 'INBOX', 8, inner)
 
     yield try_save_attachment, 'forwarded'
     yield try_save_attachment, 'filename8'
