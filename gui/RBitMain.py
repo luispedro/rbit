@@ -202,6 +202,7 @@ class RBitMain(QtCore.QObject):
 
     @QtCore.Slot(str, str)
     def open_folder(self, account, foldername):
+        self.win.searchBox.clear()
         changed = False
         if account != self.account:
             changed = True
