@@ -60,8 +60,7 @@ class RBitMain(QtCore.QObject):
 
     def setup_folder_list(self):
         fl = self.win.folderList
-        if fl.topLevelItemCount() > 0:
-            return
+        fl.clear()
         QTreeW = QtGui.QTreeWidgetItem
         nodes = {}
         folders = [f.split('.')
@@ -203,10 +202,14 @@ class RBitMain(QtCore.QObject):
 
     @QtCore.Slot(str, str)
     def open_folder(self, account, foldername):
+        changed = False
+        if account != self.account:
+            changed = True
         self.account = account
         self.foldername = foldername
         self.update_folder()
-        self.setup_folder_list()
+        if changed:
+            self.setup_folder_list()
 
     @QtCore.Slot()
     def update_folder(self):
