@@ -3,7 +3,7 @@
 from __future__ import print_function
 from HTMLParser import HTMLParser
 
-class HTML2Text(HTMLParser):
+class _HTML2Text(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self.text = []
@@ -23,10 +23,24 @@ class HTML2Text(HTMLParser):
         return text
 
 def html2text(html):
+    '''
+    text = html2text(html)
+
+    Removes HTML formatting
+
+    Parameters
+    ----------
+    html : str or unicode
+        Possibly HTML text
+
+    Returns
+    -------
+    text : str or unicode
+        Simple text
+    '''
     html = html.strip()
-    output = file('test.txt', 'w')
     if html.startswith('<'):
-        parser = HTML2Text()
+        parser = _HTML2Text()
         parser.feed(html)
         return parser.get_reset()
     return html
