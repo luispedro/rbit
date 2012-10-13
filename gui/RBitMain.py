@@ -13,6 +13,7 @@ from rbit import backend
 
 from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage, RetrainFolderModel
 from messagelist import MessageList, MessageListItem
+from graphs import show_graph_dialog
 
 
 def search_messages(query, session):
@@ -50,6 +51,8 @@ class RBitMain(QtCore.QObject):
         self.win.actionNew_Message.triggered.connect(self.new_message)
         self.win.actionRetrain_Auto_Move.triggered.connect(self.retrain_auto_move)
         self.win.attachments.itemDoubleClicked.connect(self.attachment_open)
+
+        self.win.actionGraphs.triggered.connect(show_graph_dialog)
         self.worker = GEventLoop(self)
         self.worker.start()
 

@@ -301,7 +301,14 @@
     <addaction name="actionRetrain_Auto_Move"/>
     <addaction name="actionReindex_Messages"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionGraphs"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
    <addaction name="menuMaintnance"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -376,6 +383,11 @@
   <action name="actionReindex_Messages">
    <property name="text">
     <string>Reindex Messages</string>
+   </property>
+  </action>
+  <action name="actionGraphs">
+   <property name="text">
+    <string>Graphs</string>
    </property>
   </action>
  </widget>
