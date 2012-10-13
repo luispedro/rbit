@@ -18,6 +18,6 @@ class MatplotlibWidget(FigureCanvas):
         self.setParent(parent)
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
-        self.axes = self.figure.add_subplot(1,1,1)
+        self.axes = self.figure.gca()
 
 
