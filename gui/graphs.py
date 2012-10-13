@@ -4,18 +4,6 @@ from os import path
 from PySide import QtCore, QtGui, QtUiTools
 from PySidePlus import qopen
 
-def calc_grid():
-    from rbit import models
-    from rbit.backend import create_session
-    import numpy as np
-    session = create_session()
-    grid = np.zeros((7,24))
-    for d in session.query(models.Message.date):
-        (d,) = d
-        grid[d.weekday(), d.hour] += 1
-    grid /= grid.sum()
-    return grid
-
 def plot_hours(dialog, grid):
     import numpy as np
     from MatplotlibWidget import MatplotlibWidget
@@ -24,7 +12,6 @@ def plot_hours(dialog, grid):
     hours.axes.bar(np.arange(24), grid.sum(0)*100)
     hours.axes.set_ylabel('Fraction of messages (%)')
     hours.axes.set_xlabel('hour of the day')
-    hours.canvas.show()
     return hours
 
 def plot_days(dialog, grid):
@@ -35,7 +22,6 @@ def plot_days(dialog, grid):
     days.axes.bar(np.arange(7), grid.sum(1)*100)
     days.axes.set_ylabel('Fraction of messages (%)')
     days.axes.set_xlabel('Day of the Week')
-    days.canvas.show()
     return days
 
 
@@ -45,6 +31,7 @@ def plot_days(dialog, grid):
 dialog = None
 def show_graph_dialog():
     from rbglobals import cfg
+    from rbit import stats
     global dialog
     loader = QtUiTools.QUiLoader()
     uifilepath = path.join(
@@ -55,7 +42,7 @@ def show_graph_dialog():
 
     dialog.tabWidget.clear()
     # This should be off-loaded to a background thread
-    grid = calc_grid()
+    grid = stats.day_hour_grid()
     dialog.tabWidget.addTab(plot_hours(dialog, grid), u'Hours')
     dialog.tabWidget.addTab(plot_days(dialog, grid), u'Days')
     dialog.show()
