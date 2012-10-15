@@ -99,9 +99,10 @@ class RBitMain(QtCore.QObject):
 
     def set_message(self, index):
         from os import path
+        from rbit.reldate import reldate
         m = self.win.messagelist.model().messages[index.row()]
         self.win.from_.setText(m.from_)
-        self.win.date.setText(str(m.date))
+        self.win.date.setText(reldate(m.date))
         self.win.subject.setText(m.subject)
         self.win.mbody.setHtml(_format_as_html(m.body))
 
