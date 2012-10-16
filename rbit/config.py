@@ -5,7 +5,7 @@ import sqlalchemy
 from sqlalchemy import Column, String, Integer, Text, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 
-from models import Base
+from .models import Base
 __all__ = [
     'Config',
     ]

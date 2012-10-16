@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from os import path
 
-from models import Base
+from .models import Base
 
 _engine = None
 _create_session = None
