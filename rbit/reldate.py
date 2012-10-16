@@ -1,5 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
+from __future__ import print_function
+from six import u
 
 def _monthname(m):
     months = [
@@ -34,6 +36,6 @@ def reldate(date, base=None):
         return u('{0} days ago ({1} {2} at {3}:{4})').format(diff.days, date.day, _monthname(date.month), date.hour, date.minute)
     if diff.days == 1:
         return u('yesterday at {0}:{1}').format(date.hour, date.minute)
-    if diff.days == 0:
+    if diff.days in (0,-1):
         return u('today at {0}:{1}').format(date.hour, date.minute)
-    assert False
+    return u('{0} {1} at {2}:{3}').format(date.day, _monthname(date.month), date.hour, date.minute)
