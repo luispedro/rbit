@@ -45,9 +45,9 @@ def decode_header(encoded):
     '''
     from email import header
     if isinstance(encoded, unicode):
-        return unicode
-    if encoded.startswith('=?'):
-        [(s,charset)] = header.decode_header(encoded)
-        return unicode(s, charset)
+        return encoded
+    if '=?' in encoded:
+        import pyzmail
+        return pyzmail.parse.decode_mail_header(encoded)
     return decode_unicode(encoded, [])
 
