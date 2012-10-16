@@ -31,6 +31,8 @@ def reldate(date, base=None):
         base = datetime.now()
     diff = base - date
     if diff.days > 30:
+        if base.year != date.year:
+            return u('{0} {1} {2} at {3}:{4}').format(date.day, _monthname(date.month), date.year, date.hour, date.minute)
         return u('{0} {1} at {2}:{3}').format(date.day, _monthname(date.month), date.hour, date.minute)
     if diff.days > 1:
         return u('{0} days ago ({1} {2} at {3}:{4})').format(diff.days, date.day, _monthname(date.month), date.hour, date.minute)
