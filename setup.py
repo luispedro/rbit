@@ -1,18 +1,20 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
+from __future__ import print_function
+
 try:
     import setuptools
 except:
-    print '''
+    print('''
 setuptools not found.
 
-On linux, the package is often called python-setuptools'''
+On linux, the package is often called python-setuptools''')
     from sys import exit
     exit(1)
 import os
 
-execfile('rbit/rbit_version.py')
-long_description = file('README.rst').read()
+exec(compile(open('rbit/rbit_version.py').read(), 'rbit/rbit_version.py', 'exec'))
+long_description = open('README.rst').read()
 
 undef_macros=[]
 if os.environ.get('DEBUG'):
