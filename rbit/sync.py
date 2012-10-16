@@ -191,7 +191,7 @@ def update_folder(client, folder, create_session=None):
 
     new = messages - current
     for i,uid in enumerate(new):
-        _s('Getting message %s of %s in folder %s' % (i+1, len(new), folder))
+        _s('Getting message {0} of {1} in folder {2}'. format(i+1, len(new), folder))
         m = client.retrieve(folder, uid)
         rfc822 = m[uid]['RFC822']
         flags = m[uid]['FLAGS']
