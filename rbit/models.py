@@ -22,6 +22,16 @@ class Flag(Base):
     mid = Column(Integer, ForeignKey('message.mid'), index=True)
     flag = Column(String, index=True)
 
+    def __unicode__(self):
+        return six.u('Flag({0})').format(self.flag)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __repr__(self):
+        return 'Flag({0}, {1}, {2})'.format(self.id, self.mid, self.flag)
+
+
 class Prediction(Base):
     __tablename__ = 'message_prediction'
 
