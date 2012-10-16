@@ -6,6 +6,8 @@ from rbit import models
 from rbit import signals
 from rbit.backend import create_session
 
+from six import u
+
 from os import path
 
 class index(object):
@@ -31,7 +33,7 @@ class index(object):
                                     from_=unicode(m.from_),
                                     recipient=unicode(m.to),
                                     date=m.date,
-                                    path=(u'{0}/{1}/{2}'.format(m.account, m.folder, m.uid)))
+                                    path=(u('{0}/{1}/{2}').format(m.account, m.folder, m.uid)))
             writer.commit()
 
 

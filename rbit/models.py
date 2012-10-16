@@ -5,6 +5,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime, Floa
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 
+import six
 from rbit.decode import decode_unicode
 
 Base = declarative_base()
@@ -89,7 +90,7 @@ class Message(Base):
         from datetime import datetime
 
         def u(h):
-            s = u''
+            s = six.u('')
             for text,charset in decode_header(h):
                 if charset is None:
                     s += decode_unicode(text, [])
@@ -120,7 +121,7 @@ class Message(Base):
                     get(mid)
 
     def __unicode__(self):
-        return u'Message(%s, %s -> %s)' % (self.uid, self.from_, self.to)
+        return six.u('Message({0}, {1} -> {2})'.format(self.uid, self.from_, self.to))
 
     def __str__(self):
         return str(unicode(self))

@@ -2,6 +2,7 @@
 # This file is part of rbit mail.
 from __future__ import print_function
 from HTMLParser import HTMLParser
+from six import u
 
 class _HTML2Text(HTMLParser):
     def __init__(self):
@@ -18,7 +19,7 @@ class _HTML2Text(HTMLParser):
             self.text.append(data)
 
     def get_reset(self):
-        text = u''.join(self.text)
+        text = u('').join(self.text)
         self.text = []
         return text
 

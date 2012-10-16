@@ -4,6 +4,7 @@
 from rbit import models
 from rbit import config
 
+from six import u
 
 model = None
 
@@ -33,7 +34,7 @@ def predict_inbox(message, folder, _uid, **kwargs):
 
     This matches the new-message signal
     '''
-    if folder != u'INBOX':
+    if folder != u('INBOX'):
         return
     if model is not None:
         session = kwargs['session']
