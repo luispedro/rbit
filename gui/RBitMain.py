@@ -75,9 +75,15 @@ class RBitMain(QtCore.QObject):
             if len(f) == 1:
                 fl.addTopLevelItem(ch)
             else:
-                par = nodes[tuple(f[:-1])]
-                par.addChild(ch)
-                fl.expandItem(par)
+                for ri in range(1,len(f)):
+                    k = tuple(f[:-ri])
+                    if k in nodes:
+                        par = nodes[k]
+                        par.addChild(ch)
+                        fl.expandItem(par)
+                        break
+                else:
+                    fl.addTopLevelItem(ch)
 
         fl.sortByColumn(0, QtCore.Qt.AscendingOrder)
         @fl.itemClicked.connect
