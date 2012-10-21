@@ -16,6 +16,15 @@ class Attachment(Base):
     mid = Column(Integer, ForeignKey('message.mid'), index=True)
     filename = Column(String)
 
+    def __unicode__(self):
+        return six.u('Attachment({0} of mid {1})').format(self.filename, self.mid)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __repr__(self):
+        return 'Attachment({0}, {1}, {2})'.format(self.id, self.mid, self.filename)
+
 class Flag(Base):
     __tablename__ = 'message_flag'
     id = Column(Integer, primary_key=True)
