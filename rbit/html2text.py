@@ -39,6 +39,8 @@ def html2text(html):
     text : str or unicode
         Simple text
     '''
+    if not html:
+        return u('')
     html = html.strip()
     if html.startswith('<'):
         parser = _HTML2Text()
