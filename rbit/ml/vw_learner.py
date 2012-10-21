@@ -15,12 +15,13 @@ def _fixl(l):
 
 
 def _output_message(output, message, label):
-    print >>output, \
-        label, \
-        "|body", _fixl(message.body), \
-        "|subject", _fixl(message.subject), \
-        "|from", _fixl(message.from_), \
-        "|to", _fixl(message.recipients)
+    from rbit.html2text import html2text
+    output.write('{0} |body {1} |subject {2} |from {3} |to {4}\n'.format(
+                label,
+                _fixl(html2text(message.body)),
+                _fixl(message.subject),
+                _fixl(message.from_),
+                _fixl(message.recipients)))
 
 class VWModel(object):
     def __init__(self, cache_file, model_file):
