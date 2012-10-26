@@ -88,3 +88,13 @@ def list_uids(account, folder=None, create_session=None):
     if folder is not None:
         q = q.filter_by(folder=folder)
     return q.all()
+
+def folder_prediction(message):
+    '''
+    folder = folder_prediction(message)
+
+    Returns auto move target. Returns ``None`` if there is no prediction.
+    '''
+    for pred in message.predictions:
+        if pred.type == 'folder':
+            return pred.value

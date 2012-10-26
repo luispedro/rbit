@@ -126,6 +126,11 @@ class RBitMain(QtCore.QObject):
             self.win.tabWidget.indexOf(self.win.tab_attach),
             QtGui.QApplication.translate("RBitMain", "Attachments (%s)", None, QtGui.QApplication.UnicodeUTF8) % len(m.attachments)
             )
+        target = messages.folder_prediction(m)
+        if target:
+            self.win.autoMoveNext.setText('<b>{0}</b>'.format(target))
+        else:
+            self.win.autoMoveNext.setText('<i>None</b>')
         self.active_message = m
 
     def search(self):
@@ -172,19 +177,16 @@ class RBitMain(QtCore.QObject):
         if self.active_message is None:
             return
         tr = self.win.tr
-        model = self.win.messagelist.model()
-        model.messages.remove(self.active_message)
         if action == 'move':
-            for pred in self.active_message.predictions:
-                if pred.type == 'folder':
-                    target = pred.value
-                    break
-            else:
+            target = messages.folder_prediction(self.active_message)
+            if target is None:
                 self.win.statusBar().showMessage(tr("Could not auto-move message"), 4000)
                 return
             task = MoveMessage(self, self.active_message, target)
         else:
             task = TrashMessage(self, self.active_message)
+        model = self.win.messagelist.model()
+        model.messages.remove(self.active_message)
         task.error.connect(lambda err: \
                             self.win.statusBar().showMessage(tr("Error in %s action: %s") % (tr(action),err), 4000))
         self.worker.spawn(task.perform)
