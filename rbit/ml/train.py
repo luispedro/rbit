@@ -40,7 +40,10 @@ def retrain_folder_model(create_session=None):
     _maybemkdir(_basedir)
 
     session = call_create_session(create_session)
-    ms = session.query(models.Message.folder, models.Message.mid).all()
+    ms = session. \
+            query(models.Message.folder, models.Message.mid). \
+            filter(models.Message.folder != u'INBOX'). \
+            all()
     learner = multi_tree_learner(VWLearner(_basedir))
     if len(ms) > 0:
         from time import time
