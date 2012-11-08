@@ -411,6 +411,18 @@
    <header>klineedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>messagelist</tabstop>
+  <tabstop>checkBtn</tabstop>
+  <tabstop>bTrash</tabstop>
+  <tabstop>bAutoMove</tabstop>
+  <tabstop>searchBox</tabstop>
+  <tabstop>mbody</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>folderList</tabstop>
+  <tabstop>searchGo</tabstop>
+  <tabstop>attachments</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
