@@ -13,4 +13,5 @@ def folderchoose_dialog():
         'folderchoose.ui')
     with qopen(uifilepath) as uifile:
         dialog = loader.load(uifile)
+    dialog.searchfield.addTreeWidget(dialog.folderList)
     return dialog
