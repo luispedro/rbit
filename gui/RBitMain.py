@@ -63,7 +63,7 @@ class RBitMain(QtCore.QObject):
         if not predict.init():
             self.retrain_auto_move()
 
-    def setup_folder_list(self, fl):
+    def setup_folder_list(self, fl, cb):
         fl.clear()
         QTreeW = QtGui.QTreeWidgetItem
         nodes = {}
@@ -94,8 +94,7 @@ class RBitMain(QtCore.QObject):
                 path.append(item.data(0,0))
                 item = item.parent()
             foldername = '.'.join(reversed(path))
-            self.open_folder(self.account, foldername)
-
+            cb(foldername)
 
     def set_messagelist(self, messages):
         messages = MessageList(messages)
@@ -168,21 +167,23 @@ class RBitMain(QtCore.QObject):
         self._trash_or_move('trash')
 
     def auto_move(self):
-        self._trash_or_move('move')
+        self._trash_or_move('auto-move')
 
     def update_active_message(self):
         idx = self.win.messagelist.currentIndex()
         self.set_message(idx)
 
-    def _trash_or_move(self, action):
+    def _trash_or_move(self, action, target=None):
         if self.active_message is None:
             return
         tr = self.win.tr
-        if action == 'move':
+        if action == 'auto-move':
             target = messages.folder_prediction(self.active_message)
             if target is None:
                 self.win.statusBar().showMessage(tr("Could not auto-move message"), 4000)
                 return
+            task = MoveMessage(self, self.active_message, target)
+        elif action == 'move':
             task = MoveMessage(self, self.active_message, target)
         else:
             task = TrashMessage(self, self.active_message)
@@ -216,8 +217,15 @@ class RBitMain(QtCore.QObject):
     def move_to_folder(self):
         from dialogs import FolderChoose
         dialog = FolderChoose.folderchoose_dialog()
-        self.setup_folder_list(dialog.folderList)
+        def cb(foldername):
+            self._trash_or_move('move', foldername)
+            dialog.accept()
+        self.setup_folder_list(dialog.folderList, cb)
         self.dialogs.append(dialog)
+        @dialog.finished.connect
+        def cleanup():
+            if dialog in self.dialogs:
+                self.dialogs.remove(dialog)
         dialog.show()
 
     @QtCore.Slot(str, str)
@@ -231,7 +239,9 @@ class RBitMain(QtCore.QObject):
         self.update_folder()
         if changed:
             fl = self.win.folderList
-            self.setup_folder_list(fl)
+            def cb(foldername):
+                self.open_folder(self.account, foldername)
+            self.setup_folder_list(fl, cb)
 
     @QtCore.Slot()
     def update_folder(self):
