@@ -56,14 +56,14 @@ class RBitMain(QtCore.QObject):
         self.win.actionGraphs.triggered.connect(show_graph_dialog)
         self.worker = GEventLoop(self)
         self.worker.start()
+        self.dialogs = []
 
         from rbit.ml import predict
 
         if not predict.init():
             self.retrain_auto_move()
 
-    def setup_folder_list(self):
-        fl = self.win.folderList
+    def setup_folder_list(self, fl):
         fl.clear()
         QTreeW = QtGui.QTreeWidgetItem
         nodes = {}
@@ -215,7 +215,9 @@ class RBitMain(QtCore.QObject):
 
     def move_to_folder(self):
         from dialogs import FolderChoose
-        dialog = FolderChoose.folderchoose_dialog(self.win)
+        dialog = FolderChoose.folderchoose_dialog()
+        self.setup_folder_list(dialog.folderList)
+        self.dialogs.append(dialog)
         dialog.show()
 
     @QtCore.Slot(str, str)
@@ -228,7 +230,8 @@ class RBitMain(QtCore.QObject):
         self.foldername = foldername
         self.update_folder()
         if changed:
-            self.setup_folder_list()
+            fl = self.win.folderList
+            self.setup_folder_list(fl)
 
     @QtCore.Slot()
     def update_folder(self):

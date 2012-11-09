@@ -5,7 +5,7 @@ from PySide import QtCore, QtGui, QtUiTools
 from PySidePlus import qopen
 
 
-def folderchoose_dialog(parent=None):
+def folderchoose_dialog():
     from rbglobals import cfg
     loader = QtUiTools.QUiLoader()
     uifilepath = path.join(
@@ -13,5 +13,4 @@ def folderchoose_dialog(parent=None):
         'folderchoose.ui')
     with qopen(uifilepath) as uifile:
         dialog = loader.load(uifile)
-    dialog.setParent(parent)
     return dialog
