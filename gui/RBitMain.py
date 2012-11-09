@@ -48,6 +48,7 @@ class RBitMain(QtCore.QObject):
         self.win.action_CheckMail.triggered.connect(self.check_mail)
         self.win.action_Trash.triggered.connect(self.trash)
         self.win.actionAuto_Move.triggered.connect(self.auto_move)
+        self.win.actionMove.triggered.connect(self.move_to_folder)
         self.win.actionNew_Message.triggered.connect(self.new_message)
         self.win.actionRetrain_Auto_Move.triggered.connect(self.retrain_auto_move)
         self.win.attachments.itemDoubleClicked.connect(self.attachment_open)
@@ -211,6 +212,11 @@ class RBitMain(QtCore.QObject):
         from PySide.QtCore import QUrl
         path = item.data(QtCore.Qt.DisplayRole)
         QDesktopServices.openUrl(QUrl('file://' + path))
+
+    def move_to_folder(self):
+        from dialogs import FolderChoose
+        dialog = FolderChoose.folderchoose_dialog(self.win)
+        dialog.show()
 
     @QtCore.Slot(str, str)
     def open_folder(self, account, foldername):

@@ -320,7 +320,14 @@
     </property>
     <addaction name="actionGraphs"/>
    </widget>
+   <widget class="QMenu" name="menuMessage">
+    <property name="title">
+     <string>Message</string>
+    </property>
+    <addaction name="actionMove"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuMessage"/>
    <addaction name="menuTools"/>
    <addaction name="menuMaintnance"/>
   </widget>
@@ -404,6 +411,14 @@
   <action name="actionGraphs">
    <property name="text">
     <string>Graphs</string>
+   </property>
+  </action>
+  <action name="actionMove">
+   <property name="text">
+    <string>Move</string>
+   </property>
+   <property name="shortcut">
+    <string>M</string>
    </property>
   </action>
  </widget>
