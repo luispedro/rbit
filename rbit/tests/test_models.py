@@ -39,3 +39,10 @@ def test_list():
     assert messages.list_folders('nope', create_session=(lambda:session)) == []
 
 
+def test_headers():
+    import email
+    message = _open('inline.eml').read()
+    msg = email.message_from_string(message)
+    model = Message.from_email_message(msg, 123)
+    assert len(model.headers['References'])
+    assert 'Received' not in model.headers

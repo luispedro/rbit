@@ -25,6 +25,21 @@ class Attachment(Base):
     def __repr__(self):
         return 'Attachment({0}, {1}, {2})'.format(self.id, self.mid, self.filename)
 
+class MessageRelation(Base):
+    __tablename__ = 'message_relationship'
+    source = Column(Integer, ForeignKey('message.mid'), primary_key=True, index=True)
+    target = Column(Integer, ForeignKey('message.mid'), primary_key=True, index=True)
+    reltype = Column(String)
+
+    def __unicode__(self):
+        return six.u('MessageRelation({0} -{1}-> {2})').format(self.source, self.reltype, self.target)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __repr__(self):
+        return 'MessageRelation({0}, {1}, {2}, {3})'.format(self.id, self.source, self.target, self.reltype)
+
 class Flag(Base):
     __tablename__ = 'message_flag'
     id = Column(Integer, primary_key=True)
@@ -66,10 +81,13 @@ class Message(Base):
     date = Column(DateTime)
     subject = Column(String)
     body = Column(String)
+    message_id = Column(String, index=True)
+    headers = Column(PickleType)
 
     attachments = relationship(Attachment, backref='message')
     flags = relationship(Flag, backref='message')
     predictions = relationship(Prediction, backref='message')
+    related = relationship('MessageRelation', uselist=True, primaryjoin = (mid == MessageRelation.source))
 
 
     @property
@@ -117,6 +135,11 @@ class Message(Base):
                     s += decode_unicode(text, [charset])
             return s
 
+        from collections import defaultdict
+        headers = defaultdict(list)
+        for k,v in m.items():
+            headers[k].append(v)
+        headers = dict(headers.items())
         try:
             # I feel there should be an easier way, but I have not found it
             date = datetime.fromtimestamp(mktime(parsedate(m['Date'])))
@@ -128,6 +151,8 @@ class Message(Base):
                     uid=uid,
                     subject=u(m['Subject']),
                     date=date,
+                    message_id=m['Message-Id'],
+                    headers=headers,
                     to=u(m.get('To','')),
                     cc=u(m.get('CC', '')),
                     bcc=u(m.get('BCC', '')))
