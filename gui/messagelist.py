@@ -4,6 +4,8 @@ from PySide import QtGui, QtCore
 from rbit.html2text import html2text
 import re
 
+PIXMAP_CACHE_MAX_SIZE = 512
+
 class MessageList(QtCore.QAbstractListModel):
     def __init__(self, messages):
         super(MessageList, self).__init__()
@@ -22,10 +24,31 @@ class MessageListItem(QtGui.QItemDelegate):
     def __init__(self, messages, parent=None):
         super(MessageListItem, self).__init__(parent)
         self.messages = messages
+        self.cache = {}
+
 
     def paint(self, painter, option, index):
-        m = self.messages[index.row()]
-        rect = option.rect
+        row = index.row()
+        m = self.messages[row]
+        state = int(option.state)
+        key = (m.mid,state)
+        pix = self.cache.get(key)
+        if pix is None:
+            if len(self.cache) > PIXMAP_CACHE_MAX_SIZE:
+                self.cache.clear()
+            pix = self.do_paint(option, m)
+            self.cache[key] = pix
+        p = option.rect.topLeft()
+        painter.drawPixmap(p, pix)
+
+
+    def do_paint(self, option, m):
+        w, h = option.rect.width(), option.rect.height()
+        pix = QtGui.QPixmap(w,h)
+        pix.fill()
+        painter = QtGui.QPainter(pix)
+
+        rect = QtCore.QRect(0,0,w,h)
 
         flagstr = ''
         flags = set(f.flag for f in m.flags)
@@ -63,6 +86,7 @@ class MessageListItem(QtGui.QItemDelegate):
             painter.drawText(rect, QtCore.Qt.TextSingleLine, text)
         rect.setTop(rect.top() + 12 + 4)
         painter.drawLine(rect.left(), rect.top(), (rect.left()+rect.right())//2, rect.top())
+        return pix
     
     def sizeHint(self, options, index):
         return QtCore.QSize(0, 12 + 12 + 4 + 4)
