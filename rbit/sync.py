@@ -171,7 +171,7 @@ def update_folder(client, folder, create_session=None):
                     session.query(models.Message.uid).filter_by(account=account).filter_by(folder=folder).all())
 
     extra = current - messages
-    _s('Deleting removed message in folder %s...' % folder)
+    _s('Deleting removed messages in folder {0}...'.format(folder))
     for i,uid in enumerate(extra):
         m = session.query(models.Message).filter_by(folder=folder, account=account, uid=uid).one()
         signals.emit(signals.DELETE_MESSAGE, [m])
