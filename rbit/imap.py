@@ -3,6 +3,18 @@
 
 import imapclient
 
+def breakup(seq, n):
+    if not (n > 0):
+        raise ValueError("breakup: n must be greater than zero (got {0}).".format(n))
+    cur = []
+    for s in seq:
+        if len(cur) == n:
+            yield cur
+            cur = []
+        cur.append(s)
+    if len(cur):
+        yield cur
+
 class IMAPClient(object):
     def __init__(self, host, port, username, password, ssl=True):
         port = int(port)
@@ -44,10 +56,21 @@ class IMAPClient(object):
         return self.connection.search()
 
     def retrieve_many(self, folder, messages):
+        import gevent
+        import gevent.queue
+        if not messages: return
         self._select_folder(folder)
-        for message in messages:
-            m = self.connection.fetch(message, ['RFC822', 'FLAGS'])
-            yield message, m
+        q = gevent.queue.Queue(32)
+        def perform_retrieve():
+            for block in breakup(messages, 8):
+                ms = self.connection.fetch(block, ['RFC822', 'FLAGS'])
+                for k in ms:
+                    q.put(( k, {k:ms[k]} ))
+            q.put(StopIteration)
+        gevent.spawn(perform_retrieve)
+        for r in q:
+            yield r
+            gevent.sleep()
 
     def retrieve(self, folder, message):
         [m] = self.retrieve_many(folder, [message])

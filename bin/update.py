@@ -2,6 +2,9 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
+from gevent import monkey
+monkey.patch_all(thread=False)
+
 from rbit import signals
 from rbit.sync import update_all_folders
 from rbit import config
