@@ -43,9 +43,15 @@ class IMAPClient(object):
         self._select_folder(folder)
         return self.connection.search()
 
-    def retrieve(self, folder, message):
+    def retrieve_many(self, folder, messages):
         self._select_folder(folder)
-        return self.connection.fetch(message, ['RFC822', 'FLAGS'])
+        for message in messages:
+            m = self.connection.fetch(message, ['RFC822', 'FLAGS'])
+            yield message, m
+
+    def retrieve(self, folder, message):
+        [m] = self.retrieve_many(folder, [message])
+        return m
 
     def trash_messages(self, uids, trash_folder='INBOX.Trash'):
         self.move_messages(uids, trash_folder)

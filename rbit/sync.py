@@ -190,9 +190,8 @@ def update_folder(client, folder, create_session=None):
     session.commit()
 
     new = messages - current
-    for i,uid in enumerate(new):
+    for i,(uid,m) in enumerate(client.retrieve_many(folder,new)):
         _s('Getting message {0} of {1} in folder {2}'. format(i+1, len(new), folder))
-        m = client.retrieve(folder, uid)
         rfc822 = m[uid]['RFC822']
         flags = m[uid]['FLAGS']
         created = message_to_model(rfc822, account, folder, uid, flags)
