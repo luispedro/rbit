@@ -14,14 +14,27 @@ def _fixl(l):
     return ":1 ".join(map(fixs, l.split()))
 
 
+def _formatted_headers(headers):
+    keys = headers.keys()
+    keys.sort()
+    res = []
+    for k in keys:
+        v = headers[k]
+        v = ' '.join(v)
+        res.append(k)
+        res.append(v)
+    return _fixl(" ".join(res))
+
 def _output_message(output, message, label):
     from rbit.html2text import html2text
-    output.write('{0} |body {1} |subject {2} |from {3} |to {4}\n'.format(
+    output.write('{0} |subject {1} |from {2} |to {4} |headers {5}\n'.format(
                 label,
-                _fixl(html2text(message.body)),
                 _fixl(message.subject),
                 _fixl(message.from_),
-                _fixl(message.recipients)))
+                _fixl(message.recipients),
+                _formatted_headers(message.headers),
+                _fixl(html2text(message.body)),
+                ))
 
 class VWModel(object):
     def __init__(self, cache_file, model_file):
