@@ -11,7 +11,7 @@ from rbit import index
 from rbit import signals
 from rbit import backend
 
-from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage, RetrainFolderModel
+from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage, RetrainFolderModel, PredictMessages
 from messagelist import MessageList, MessageListItem
 from graphs import show_graph_dialog
 
@@ -51,6 +51,7 @@ class RBitMain(QtCore.QObject):
         self.win.actionMove.triggered.connect(self.move_to_folder)
         self.win.actionNew_Message.triggered.connect(self.new_message)
         self.win.actionRetrain_Auto_Move.triggered.connect(self.retrain_auto_move)
+        self.win.actionInbox_Predict.triggered.connect(self.repredict_auto_move)
         self.win.attachments.itemDoubleClicked.connect(self.attachment_open)
 
         self.win.actionGraphs.triggered.connect(show_graph_dialog)
@@ -128,9 +129,11 @@ class RBitMain(QtCore.QObject):
             )
         target = messages.folder_prediction(m)
         if target:
+            self.win.actionAuto_Move.enabled = True
             self.win.autoMoveNext.setText('<b>{0}</b>'.format(target))
         else:
-            self.win.autoMoveNext.setText('<i>None</b>')
+            self.win.actionAuto_Move.enabled = False
+            self.win.autoMoveNext.setText('<i>No auto move folder</i>')
         self.active_message = m
 
     def search(self):
@@ -205,6 +208,17 @@ class RBitMain(QtCore.QObject):
         tr = self.win.tr
         task.error.connect(lambda err: \
                             self.win.statusBar().showMessage(tr("Error in retraining folder model {0}.").format(err), 4000))
+        self.worker.spawn(task.perform)
+
+    def repredict_auto_move(self):
+        uids = [u for u, in self.session.
+                            query(models.Message.uid).
+                            filter_by(folder=u'INBOX').
+                            all()]
+        task = PredictMessages(self, self.account, uids)
+        tr = self.win.tr
+        task.error.connect(lambda err: \
+                            self.win.statusBar().showMessage(tr("Error in prediction {0}.").format(err), 4000))
         self.worker.spawn(task.perform)
 
     @QtCore.Slot(QtGui.QListWidgetItem)

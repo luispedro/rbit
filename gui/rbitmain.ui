@@ -313,6 +313,7 @@
     </property>
     <addaction name="actionRetrain_Auto_Move"/>
     <addaction name="actionReindex_Messages"/>
+    <addaction name="actionInbox_Predict"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -419,6 +420,11 @@
    </property>
    <property name="shortcut">
     <string>M</string>
+   </property>
+  </action>
+  <action name="actionInbox_Predict">
+   <property name="text">
+    <string>Inbox Predict</string>
    </property>
   </action>
  </widget>

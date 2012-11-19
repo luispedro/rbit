@@ -120,3 +120,25 @@ class TrashMessage(MoveMessage):
     def __init__(self, parent, message):
         MoveMessage.__init__(self, parent, message, 'INBOX.Trash')
 
+class PredictMessages(RBitTask):
+    def __init__(self, parent, account, uids):
+        super(PredictMessages, self).__init__(parent)
+        self.account = account
+        self.uids = uids
+
+    def _perform(self):
+        from rbit.ml import predict
+        from rbit.backend import create_session
+        from rbit.models import Message
+        session = create_session()
+        for uid in self.uids:
+            message = session.\
+                        query(Message).\
+                        filter_by(account=self.account).\
+                        filter_by(uid=uid).\
+                        filter_by(folder=u'INBOX').\
+                        one()
+            if message is not None:
+                predict.predict_inbox(message, u'INBOX', uid, session=session)
+        session.commit()
+
