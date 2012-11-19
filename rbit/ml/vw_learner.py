@@ -6,12 +6,19 @@ from os import path
 
 _vw_path = 'vw'
 
-def _fixl(l):
+def _as_features(l):
+    '''
+    features = _as_features(str)
+
+    Format as features.
+    '''
     if l is None:
         return ""
     def fixs(s):
         return s.encode('utf-8').replace(':','_').replace('|','_')
-    return ":1 ".join(map(fixs, l.split()))
+    tokens = map(fixs, l.split())
+    tokens.append('')
+    return ":1 ".join(tokens)
 
 
 def _formatted_headers(headers):
@@ -23,17 +30,17 @@ def _formatted_headers(headers):
         v = ' '.join(v)
         res.append(k)
         res.append(v)
-    return _fixl(" ".join(res))
+    return _as_features(" ".join(res))
 
 def _output_message(output, message, label):
     from rbit.html2text import html2text
     output.write('{0} |subject {1} |from {2} |to {4} |headers {5}\n'.format(
                 label,
-                _fixl(message.subject),
-                _fixl(message.from_),
-                _fixl(message.recipients),
+                _as_features(message.subject),
+                _as_features(message.from_),
+                _as_features(message.recipients),
                 _formatted_headers(message.headers),
-                _fixl(html2text(message.body)),
+                _as_features(html2text(message.body)),
                 ))
 
 class VWModel(object):

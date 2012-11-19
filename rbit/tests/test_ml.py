@@ -12,3 +12,7 @@ def test_formatted_headers():
     f = _formatted_headers(headers)
     assert len(f)
 
+
+def test_as_features():
+    from rbit.ml.vw_learner import _as_features
+    assert 'a' != _as_features('a')
