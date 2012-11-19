@@ -43,6 +43,7 @@ def retrain_folder_model(create_session=None):
     ms = session. \
             query(models.Message.folder, models.Message.mid). \
             filter(models.Message.folder != u'INBOX'). \
+            filter(models.Message.folder != u'INBOX.Sent'). \
             all()
     learner = multi_tree_learner(VWLearner(_basedir))
     if len(ms) > 0:
