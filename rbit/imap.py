@@ -29,7 +29,8 @@ class IMAPClient(object):
                     cfg.get('account', 'host'),
                     cfg.get('account', 'port'),
                     cfg.get('account', 'user'),
-                    cfg.get('account', 'password'))
+                    cfg.get('account', 'password'),
+                    cfg.get_default('account', 'ssl', False))
 
     def close(self):
         pass
