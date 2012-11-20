@@ -62,6 +62,18 @@ class Config(object):
         except KeyError:
             return default
 
+    def _save_to(self, outfile):
+        '''
+        cfg._save_to(outfile)
+
+        Uses `outfile` as a file-like object and writes entries to it.
+
+        For debugging purposes.
+        '''
+
+        for e in self.session.query(ConfigEntry):
+            outfile.write('{0}\t{1}\t{2}\t{3}\n'.format(e.supergroup, e.group, e.name, e.value))
+
     def set(self, group, name, value):
         _config_set(self.supergroup, group, name, value, self.session)
 
