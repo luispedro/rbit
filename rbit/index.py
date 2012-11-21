@@ -60,11 +60,16 @@ class index(object):
         ix : whoosh.index
         messages : sequence of models.Message
         '''
+        writer = self.ix.writer()
         for m in messages:
-            writer = self.ix.writer()
             writer.delete_by_term('path', '{0}/{1}/{2}'.format(m.account, m.folder, m.uid))
-            writer.commit()
+        writer.commit()
 
+
+    def close(self):
+        self.ix.close()
+        self.ix = None
+        self.searcher = None
 
     def register(self):
         '''
@@ -89,6 +94,12 @@ class index(object):
                 yield account,folder, uid
 
 
+def _indexpath():
+    from os import path
+    return path.join(
+                path.expanduser('~/.local/share/rbit'),
+                'indexdir')
+
 def get_index():
     '''
     index = get_index()
@@ -96,9 +107,7 @@ def get_index():
     Returns the index
     '''
     from whoosh.index import open_dir, create_in, exists_in
-    indexdir = path.join(
-                path.expanduser('~/.local/share/rbit'),
-                'indexdir')
+    indexdir = _indexpath()
     if exists_in(indexdir):
         ix = open_dir(indexdir)
         return index(ix)
@@ -111,3 +120,12 @@ def get_index():
     schema = f.Schema(body=f.TEXT, subject=f.TEXT, from_=f.TEXT, recipient=f.TEXT, date=f.DATETIME, path=f.ID(stored=True, unique=True))
     ix = create_in(indexdir, schema)
     return index(ix)
+
+def remove_index():
+    '''
+    remove_index()
+
+    Removes index
+    '''
+    from shutil import rmtree
+    rmtree(_indexpath())
