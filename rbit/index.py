@@ -38,15 +38,15 @@ class index(object):
         ix : whoosh.index
         messages : sequence of models.Message
         '''
+        writer = self.ix.writer()
         for m in messages:
-            writer = self.ix.writer()
             writer.add_document(body=unicode(m.body),
                                     subject=unicode(m.subject),
                                     from_=unicode(m.from_),
                                     recipient=unicode(m.to),
                                     date=m.date,
                                     path=(u('{0}/{1}/{2}').format(m.account, m.folder, m.uid)))
-            writer.commit()
+        writer.commit()
 
 
     def remove(self, messages):
