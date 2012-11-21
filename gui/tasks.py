@@ -142,3 +142,28 @@ class PredictMessages(RBitTask):
                 predict.predict_inbox(message, u'INBOX', uid, session=session)
         session.commit()
 
+def paginate(q, n):
+    s = 0
+    while True:
+        rs = q.slice(s, s + n).all()
+        if len(rs):
+            yield rs
+        else:
+            return
+        s += n
+
+class ReindexMessages(RBitTask):
+    def _perform(self):
+        import rbglobals
+        from rbit import index as rbit_index
+        from rbit.backend import create_session
+        from rbit.models import Message
+        from rbit.imap import breakup
+        rbglobals.index.close()
+        rbit_index.remove_index()
+        rbglobals.index = rbit_index.get_index()
+        session = create_session()
+        q = session.query(Message)
+        for ms in paginate(q, 128):
+            rbglobals.index.add(ms)
+        self.status.emit('Message reindexing complete')

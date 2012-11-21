@@ -11,7 +11,7 @@ from rbit import index
 from rbit import signals
 from rbit import backend
 
-from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage, RetrainFolderModel, PredictMessages
+from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage, RetrainFolderModel, PredictMessages, ReindexMessages
 from messagelist import MessageList, MessageListItem
 from graphs import show_graph_dialog
 
@@ -50,6 +50,7 @@ class RBitMain(QtCore.QObject):
         self.win.actionAuto_Move.triggered.connect(self.auto_move)
         self.win.actionMove.triggered.connect(self.move_to_folder)
         self.win.actionNew_Message.triggered.connect(self.new_message)
+        self.win.actionReindex_Messages.triggered.connect(self.reindex_messages)
         self.win.actionRetrain_Auto_Move.triggered.connect(self.retrain_auto_move)
         self.win.actionInbox_Predict.triggered.connect(self.repredict_auto_move)
         self.win.attachments.itemDoubleClicked.connect(self.attachment_open)
@@ -202,6 +203,14 @@ class RBitMain(QtCore.QObject):
         from Composer import Composer
         c = Composer(self)
         c.show()
+
+    def reindex_messages(self):
+        tr = self.win.tr
+        task = ReindexMessages(self)
+        task.error.connect(lambda err: \
+                            self.win.statusBar().showMessage(tr("Error in reindexing messages: {0}.").format(err), 4000))
+        self.worker.spawn(task.perform)
+
 
     def retrain_auto_move(self):
         task = RetrainFolderModel(self)
