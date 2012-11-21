@@ -16,6 +16,18 @@ class index(object):
         from whoosh.qparser import QueryParser
         self.parser = QueryParser('body', schema=ix.schema)
 
+    def clear(self):
+        '''
+        index.clear()
+
+        Removes all messages
+        '''
+        q = self.parser.parse(u'*')
+        w = self.ix.writer()
+        w.delete_by_query(q)
+        w.commit()
+        self.ix.optimize()
+
 
     def add(self, messages):
         '''
