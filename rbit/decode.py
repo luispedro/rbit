@@ -2,17 +2,17 @@
 # This file is part of rbit mail.
 
 _default_charsets = ['utf-8', 'latin1']
-def decode_unicode(text, charsets):
+def decode_unicode(text, charsets=[]):
     '''
-    uni = decode_unicode(text)
+    uni = decode_unicode(text, charsets=[])
 
     Decode string to unicode
 
     Parameters
     ----------
     text : str or unicode
-    charsets : list of str
-        Charsets to try
+    charsets : list of str, optional
+        Charsets to try in addition to 'utf8' and 'latin1'
 
     Returns
     -------
