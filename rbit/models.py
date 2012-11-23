@@ -1,7 +1,7 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
-from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime, Float, PickleType
+from sqlalchemy import Column, String, Unicode, Integer, ForeignKey, Text, DateTime, Float, PickleType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 
@@ -74,13 +74,13 @@ class Message(Base):
     account = Column(String)
     folder = Column(String, index=True)
 
-    from_ = Column(String)
-    to = Column(String)
-    cc = Column(String)
-    bcc = Column(String)
+    from_ = Column(Unicode)
+    to = Column(Unicode)
+    cc = Column(Unicode)
+    bcc = Column(Unicode)
     date = Column(DateTime)
-    subject = Column(String)
-    body = Column(String)
+    subject = Column(Unicode)
+    body = Column(Unicode)
     message_id = Column(String, index=True)
     headers = Column(PickleType)
 
@@ -175,7 +175,6 @@ class Folder(Base):
     __tablename__ = 'folder'
     fid = Column(Integer, primary_key=True)
     name = Column(String(128), index=True)
-    folder = Column(String, index=True)
     account = Column(String, index=True)
     uidvalidity = Column(Integer)
     highestmodseq = Column(Integer)
