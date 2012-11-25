@@ -170,6 +170,7 @@ class ReindexMessages(RBitTask):
         from rbit.backend import create_session
         from rbit.models import Message
         from rbit.imap import breakup
+        from gevent import sleep
         rbglobals.index.close()
         rbit_index.remove_index()
         rbglobals.index = rbit_index.get_index()
@@ -183,5 +184,6 @@ class ReindexMessages(RBitTask):
             session.expunge_all()
             if self.dead:
                 break
+            sleep()
         self.status.emit('Message reindexing complete')
 
