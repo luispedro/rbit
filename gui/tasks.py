@@ -143,14 +143,10 @@ class PredictMessages(RBitTask):
                 predict.predict_inbox(message, u'INBOX', uid, session=session)
         session.commit()
 
-def paginate(q, n):
+def paginate(xs, n):
     s = 0
-    while True:
-        rs = q.slice(s, s + n).all()
-        if len(rs):
-            yield rs
-        else:
-            return
+    while s < len(xs):
+        yield xs[s:s+n]
         s += n
 
 class ReindexMessages(RBitTask):
@@ -164,9 +160,14 @@ class ReindexMessages(RBitTask):
         rbit_index.remove_index()
         rbglobals.index = rbit_index.get_index()
         session = create_session()
-        q = session.query(Message)
+        q = session.query(Message.mid)
         nmessages = q.count()
-        for done,ms in enumerate(paginate(q, 128)):
-            self.progress.emit(done*128, nmessages)
-            rbglobals.index.add(ms)
+        mids = q.all()
+        STEP = 512
+        for done,ms in enumerate(paginate(mids, STEP)):
+            self.progress.emit(done*STEP, nmessages)
+            messages = [Message.load_by_mid(m, create_session=(lambda:session)) for m in ms]
+            rbglobals.index.add(messages)
+            session.expunge_all()
         self.status.emit('Message reindexing complete')
+
