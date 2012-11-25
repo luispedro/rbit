@@ -53,6 +53,7 @@ class GEventLoop(QtCore.QThread):
 class RBitTask(QtCore.QObject):
     error = QtCore.Signal(str)
     status = QtCore.Signal(str)
+    progress = QtCore.Signal(int, int)
     done = QtCore.Signal()
 
     def perform(self):
@@ -164,6 +165,8 @@ class ReindexMessages(RBitTask):
         rbglobals.index = rbit_index.get_index()
         session = create_session()
         q = session.query(Message)
-        for ms in paginate(q, 128):
+        nmessages = q.count()
+        for done,ms in enumerate(paginate(q, 128)):
+            self.progress.emit(done*128, nmessages)
             rbglobals.index.add(ms)
         self.status.emit('Message reindexing complete')

@@ -209,6 +209,8 @@ class RBitMain(QtCore.QObject):
         task = ReindexMessages(self)
         task.error.connect(lambda err: \
                             self.win.statusBar().showMessage(tr("Error in reindexing messages: {0}.").format(err), 4000))
+        task.progress.connect(lambda sofar,total:
+                            self.win.statusBar().showMessage(tr("Reindexing ({0:,} of {1:,} done).").format(sofar,total), 4000))
         self.worker.spawn(task.perform)
 
 
