@@ -14,6 +14,7 @@ def main(argv):
     from rbglobals import cfg
     app = QApplication(argv)
     main = RBitMain(app)
+    app.aboutToQuit.connect(main.aboutToQuit)
     app.aboutToQuit.connect(main.worker.kill)
     main.win.show()
     if cfg.has_entry('account', 'user'):

@@ -29,6 +29,7 @@ def _format_as_html(text):
     return '<html><head></head><body><pre>%s</pre></html>' % text
 
 class RBitMain(QtCore.QObject):
+    aboutToQuit = QtCore.Signal()
     def __init__(self, parent=None):
         super(RBitMain, self).__init__(parent)
         loader = QtUiTools.QUiLoader()
@@ -211,6 +212,7 @@ class RBitMain(QtCore.QObject):
                             self.win.statusBar().showMessage(tr("Error in reindexing messages: {0}.").format(err), 4000))
         task.progress.connect(lambda sofar,total:
                             self.win.statusBar().showMessage(tr("Reindexing ({0:,} of {1:,} done).").format(sofar,total), 4000))
+        self.aboutToQuit.connect(task.schedule_death)
         self.worker.spawn(task.perform)
 
 

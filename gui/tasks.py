@@ -56,6 +56,20 @@ class RBitTask(QtCore.QObject):
     progress = QtCore.Signal(int, int)
     done = QtCore.Signal()
 
+    def __init__(self, *args, **kwargs):
+        super(RBitTask, self).__init__(*args, **kwargs)
+        self.dead = False
+
+    def schedule_death(self):
+        '''
+        task.schedule_death()
+
+        This method should cause the task to complete at its earliest
+        convenience. There are no garantees on how long this should take,
+        however.
+        '''
+        self.dead = True
+
     def perform(self):
         try:
             self._perform()
@@ -160,14 +174,14 @@ class ReindexMessages(RBitTask):
         rbit_index.remove_index()
         rbglobals.index = rbit_index.get_index()
         session = create_session()
-        q = session.query(Message.mid)
-        nmessages = q.count()
-        mids = q.all()
-        STEP = 512
+        mids = session.query(Message.mid).all()
+        STEP = 256
         for done,ms in enumerate(paginate(mids, STEP)):
-            self.progress.emit(done*STEP, nmessages)
+            self.progress.emit(done*STEP, len(mids))
             messages = [Message.load_by_mid(m, create_session=(lambda:session)) for m in ms]
             rbglobals.index.add(messages)
             session.expunge_all()
+            if self.dead:
+                break
         self.status.emit('Message reindexing complete')
 
