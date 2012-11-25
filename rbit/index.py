@@ -15,6 +15,8 @@ class index(object):
         self.ix = ix
         from whoosh.qparser import QueryParser
         self.parser = QueryParser('body', schema=ix.schema)
+        self.limitmb = 256
+        self.procs = 2
 
     def clear(self):
         '''
@@ -38,7 +40,7 @@ class index(object):
         ix : whoosh.index
         messages : sequence of models.Message
         '''
-        writer = self.ix.writer()
+        writer = self.ix.writer(procs=self.procs, limitmb=self.limitmb)
         for m in messages:
             writer.add_document(body=unicode(m.body),
                                     subject=unicode(m.subject),
