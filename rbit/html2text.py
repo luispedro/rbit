@@ -4,6 +4,8 @@ from __future__ import print_function
 from HTMLParser import HTMLParser
 from six import u
 
+_body_tags = frozenset(['body', 'p', 'div'])
+
 class _HTML2Text(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
@@ -11,7 +13,7 @@ class _HTML2Text(HTMLParser):
         self.status = 'head'
 
     def handle_starttag(self, tag, _attrs):
-        if tag == 'body':
+        if tag in _body_tags:
             self.status = 'body'
 
     def handle_data(self, data):
