@@ -3,6 +3,7 @@
 
 import subprocess
 from os import path
+from rbit.decode import decode_unicode
 
 _vw_path = 'vw'
 
@@ -15,10 +16,12 @@ def _as_features(l):
     if l is None:
         return ""
     def fixs(s):
-        return s.encode('utf-8').replace(':','_').replace('|','_')
+        assert type(s) == unicode
+        return s.replace(':','_').replace('|','_')
     tokens = map(fixs, l.split())
     tokens.append('')
-    return ":1 ".join(tokens)
+    single = u":1 ".join(tokens)
+    return single.encode('utf-8')
 
 
 def _formatted_headers(headers):
@@ -27,10 +30,12 @@ def _formatted_headers(headers):
     res = []
     for k in keys:
         v = headers[k]
-        v = ' '.join(v)
-        res.append(k)
+        k = decode_unicode(k)
+        v = map(decode_unicode, v)
+        v = u' '.join(v)
+        res.append(k.decode('utf-8'))
         res.append(v)
-    return _as_features(" ".join(res))
+    return _as_features(u" ".join(res))
 
 def _output_message(output, message, label):
     from rbit.html2text import html2text
