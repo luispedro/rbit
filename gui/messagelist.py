@@ -85,7 +85,6 @@ class MessageListItem(QtGui.QItemDelegate):
             text = text.encode('utf-8')
             painter.drawText(rect, QtCore.Qt.TextSingleLine, text)
         rect.setTop(rect.top() + 12 + 4)
-        painter.drawLine(rect.left(), rect.top(), (rect.left()+rect.right())//2, rect.top())
         return pix
     
     def sizeHint(self, options, index):
