@@ -1,5 +1,6 @@
 # Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
+from __future__ import print_function
 from PySide import QtGui, QtCore
 from rbit.html2text import html2text
 import re
@@ -48,6 +49,7 @@ class MessageListItem(QtGui.QItemDelegate):
         pix.fill()
         painter = QtGui.QPainter(pix)
 
+        r,g,b = 0,0,0
         rect = QtCore.QRect(0,0,w,h)
 
         flagstr = ''
@@ -62,7 +64,8 @@ class MessageListItem(QtGui.QItemDelegate):
         predictions = ""
         for p in m.predictions:
             if p.type == 'folder':
-                predictions += '%s (%.2f)' % (p.value, p.strength)
+                predictions = '     -> {0.value} {0.strength:.2}'.format(p)
+                break
 
         if option.state & QtGui.QStyle.State_MouseOver:
             painter.fillRect(rect, option.palette.color(QtGui.QPalette.Highlight).lighter())
@@ -73,7 +76,8 @@ class MessageListItem(QtGui.QItemDelegate):
         font = painter.font()
         font.setWeight(QtGui.QFont.Bold)
         painter.setFont(font)
-        painter.drawText(rect, QtCore.Qt.TextSingleLine, u'{0:<8} {1} ::: {2}    -> {3}'.format(flagstr, m.from_, m.subject, predictions))
+        painter.setPen(QtGui.QColor(int(255*r), int(255*g), int(255*b)))
+        painter.drawText(rect, QtCore.Qt.TextSingleLine, u'{0:<8} {1} ::: {2} {3}'.format(flagstr, m.from_, m.subject, predictions))
         painter.restore()
         rect.setTop(rect.top() + 12)
         text = html2text(m.body)
