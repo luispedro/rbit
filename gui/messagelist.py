@@ -21,16 +21,23 @@ class MessageList(QtCore.QAbstractListModel):
     def data(self, index, role):
         return None
 
+    def remove_message(self, m):
+        pos = self.messages.index(m)
+        p = QtCore.QModelIndex()
+        self.rowsAboutToBeRemoved.emit(p, pos, pos)
+        del self.messages[pos]
+        self.rowsRemoved.emit(p, pos, pos)
+
 class MessageListItem(QtGui.QItemDelegate):
-    def __init__(self, messages, parent=None):
+    def __init__(self, mlist, parent=None):
         super(MessageListItem, self).__init__(parent)
-        self.messages = messages
+        self.mlist = mlist
         self.cache = {}
 
 
     def paint(self, painter, option, index):
         row = index.row()
-        m = self.messages[row]
+        m = self.mlist.messages[row]
         state = int(option.state)
         key = (m.mid,state)
         pix = self.cache.get(key)

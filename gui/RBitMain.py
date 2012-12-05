@@ -97,7 +97,8 @@ class RBitMain(QtCore.QObject):
     def set_messagelist(self, messages):
         messages = MessageList(messages)
         self.win.messagelist.setModel(messages)
-        self.win.messagelist.setItemDelegate(MessageListItem(messages.messages, self.win.messagelist))
+        self.win.messagelist.setItemDelegate(
+                    MessageListItem(messages, self.win.messagelist))
         if messages.rowCount(None):
             self.set_message(messages.createIndex(0,0))
 
@@ -188,7 +189,7 @@ class RBitMain(QtCore.QObject):
         else:
             task = TrashMessage(self, self.active_message)
         model = self.win.messagelist.model()
-        model.messages.remove(self.active_message)
+        model.remove_message(self.active_message)
         task.error.connect(lambda err: \
                             self.win.statusBar().showMessage(tr("Error in %s action: %s") % (tr(action),err), 4000))
         self.worker.spawn(task.perform)
