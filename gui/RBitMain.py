@@ -10,6 +10,7 @@ from rbit import messages
 from rbit import index
 from rbit import signals
 from rbit import backend
+from rbit.html import format_as_html
 
 from tasks import GEventLoop, UpdateMessages, TrashMessage, MoveMessage, RetrainFolderModel, PredictMessages, ReindexMessages
 from messagelist import MessageList, MessageListItem
@@ -21,12 +22,6 @@ def search_messages(query, session):
     return [
         messages.load_message(a,f,u, create_session=(lambda : session))
             for a,f,u in index.search(query, limit=128)]
-
-
-def _format_as_html(text):
-    if '<html>' in text or \
-        '<body>' in text: return text
-    return '<html><head></head><body><pre>%s</pre></html>' % text
 
 class RBitMain(QtCore.QObject):
     aboutToQuit = QtCore.Signal()
@@ -113,7 +108,7 @@ class RBitMain(QtCore.QObject):
         self.win.from_.setText(m.from_)
         self.win.date.setText(reldate(m.date))
         self.win.subject.setText(m.subject)
-        self.win.mbody.setHtml(_format_as_html(m.body))
+        self.win.mbody.setHtml(format_as_html(m.body))
 
         while self.win.attachments.count():
             self.win.attachments.takeItem(0)

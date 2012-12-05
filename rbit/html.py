@@ -2,6 +2,8 @@
 # This file is part of rbit mail.
 
 from HTMLParser import HTMLParser
+import re
+
 class _GetText(HTMLParser):
     def __init__(self):
         # Cannot call super() because HTMLParser is an old-style class!
@@ -42,4 +44,23 @@ def text_from_html(html):
     parser = _GetText()
     parser.feed(html)
     return "".join(parser.texts)
+
+
+def format_as_html(text):
+    '''
+    html = format_as_html(text)
+
+    Format as HTML
+    '''
+    if '<html>' in text or \
+        '<body>' in text or \
+        '<p>' in text: return text
+    start = u'<html><head></head><body>'
+    end = u'</body></html>'
+    text = text.replace('\r\n', '\n')
+    text = re.sub('^\s*$','', text, flags=re.M)
+    paragraphs = text.split('\n\n')
+    paragraphs = [u'<p>{}</p>'.format(p) for p in paragraphs]
+    html = u''.join([start]+paragraphs+[end])
+    return html
 
