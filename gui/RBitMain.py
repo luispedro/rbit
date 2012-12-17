@@ -170,8 +170,11 @@ class RBitMain(QtCore.QObject):
     def auto_move(self):
         self._trash_or_move('auto-move')
 
-    def update_active_message(self):
-        idx = self.win.messagelist.currentIndex()
+    def update_active_message(self, idx=None):
+        if idx is None:
+            idx = self.win.messagelist.currentIndex()
+        else:
+            self.win.messagelist.setCurrentIndex(idx)
         self.set_message(idx)
 
     def _trash_or_move(self, action, target=None):
@@ -188,13 +191,15 @@ class RBitMain(QtCore.QObject):
             task = MoveMessage(self, self.active_message, target)
         else:
             task = TrashMessage(self, self.active_message)
-        model = self.win.messagelist.model()
+        ml = self.win.messagelist
+        model = ml.model()
+        idx = ml.currentIndex()
         model.remove_message(self.active_message)
         task.error.connect(lambda err: \
                             self.win.statusBar().showMessage(tr("Error in %s action: %s") % (tr(action),err), 4000))
         self.worker.spawn(task.perform)
         self.active_message = None
-        self.update_active_message()
+        self.update_active_message(idx)
 
     def new_message(self):
         from Composer import Composer
