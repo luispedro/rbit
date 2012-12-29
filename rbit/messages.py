@@ -2,7 +2,7 @@
 # This file is part of rbit mail.
 
 from rbit import backend
-from rbit.models import Message
+from rbit.models import Message, Folder
 
 def load_message(account, folder, uid, create_session=None):
     '''
@@ -61,7 +61,7 @@ def list_folders(account, create_session=None):
         Folder names
     '''
     session = backend.call_create_session(create_session)
-    fs = session.query(Message.folder) \
+    fs = session.query(Folder.name) \
             .filter_by(account=account) \
             .distinct() \
             .all()
