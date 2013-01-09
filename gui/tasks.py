@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
+# Copyright (C) 2012-2013 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
 from __future__ import print_function
@@ -6,6 +6,17 @@ from PySide import QtCore
 import Queue
 
 from rbit import signals
+
+_imap_manager = None
+def get_imap():
+    # By importing only inside the function, we avoid having to import at
+    # programme start up
+    from resources import imap_manager
+    global _imap_manager
+    if _imap_manager is None:
+        _imap_manager = imap_manager()
+    return _imap_manager.get()
+
 
 def run_from_queue(group, q):
     from gevent import monkey
@@ -121,15 +132,10 @@ class MoveMessage(RBitTask):
         self.target = target
 
     def _perform(self):
-        from rbit import config
-        from rbit import backend
-        from rbit import imap
-        cfg = config.Config('config', backend.create_session)
-        client = imap.IMAPClient.from_config(cfg)
-        client.select_folder(self.folder)
-        client.move_messages([self.uid], self.target)
-        client.expunge()
-        client.close()
+        with get_imap() as client:
+            client.select_folder(self.folder)
+            client.move_messages([self.uid], self.target)
+            client.expunge()
 
 class TrashMessage(MoveMessage):
     def __init__(self, parent, message):
