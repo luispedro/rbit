@@ -15,10 +15,10 @@ class imap_manager(object):
         import gevent
         gevent.sleep(360)
         self.sem.acquire()
-        if self.count == current:
+        if self.client is not None and self.count == current:
             self.client.close()
             self.client = None
-        imap_sem.release()
+        self.sem.release()
 
     @contextmanager
     def get(self):
