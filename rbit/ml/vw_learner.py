@@ -39,7 +39,7 @@ def _formatted_headers(headers):
 
 def _output_message(output, message, label):
     from rbit.html2text import html2text
-    output.write('{0} |subject {1} |from {2} |to {4} |headers {5}\n'.format(
+    output.write('{0} |subject {1} |from {2} |to {3} |headers {4}|body {5}\n'.format(
                 label,
                 _as_features(message.subject),
                 _as_features(message.from_),
