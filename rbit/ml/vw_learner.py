@@ -72,7 +72,7 @@ class VWModel(object):
         res = proc.stdout.read()
         label,strength = res.strip().split(':')
         label = int(label)
-        return float(strength), self.names[label]
+        return float(strength), self.names[label-1]
 
 
 class VWLearner(object):
