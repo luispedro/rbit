@@ -1,11 +1,13 @@
-# Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
+# Copyright (C) 2012-2013 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
 import subprocess
 from os import path
 from rbit.decode import decode_unicode
+import logging
 
 _vw_path = 'vw'
+log = logging
 
 def _as_features(l):
     '''
@@ -49,23 +51,28 @@ def _output_message(output, message, label):
                 ))
 
 class VWModel(object):
-    def __init__(self, cache_file, model_file):
+    def __init__(self, cache_file, model_file, names):
         self.cache_file = cache_file
         self.model_file = model_file
+        self.names = names
 
     def apply(self, message):
-        proc = subprocess.Popen([_vw_path,
+        args = [_vw_path,
             '-t',
             '--initial_regressor', self.model_file,
             '-r', '/dev/stdout',
-            ],
+            ]
+        log.info('Executing {}'.format(' '.join(args)))
+        proc = subprocess.Popen(args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE)
-        _output_message(proc.stdin, message, 0)
+        _output_message(proc.stdin, message, 1)
 
         proc.stdin.close()
         res = proc.stdout.read()
-        return float(res)
+        label,strength = res.strip().split(':')
+        label = int(label)
+        return float(strength), self.names[label]
 
 
 class VWLearner(object):
@@ -74,23 +81,28 @@ class VWLearner(object):
         self.passes = 2
         self.ngram = 3
 
-    def train(self, mids, labels, name, normalisedlabels, create_session=None):
+    def train(self, mids, labels, create_session=None):
         from rbit import models
-        assert normalisedlabels
-        assert max(labels) == 1
-        model_file = path.join(self.basedir, '%s.model' % name)
-        cache_file = path.join(self.basedir, '%s.cache' % name)
-        proc = subprocess.Popen([_vw_path,
+        names = list(set(labels))
+        names.sort()
+        labels = [names.index(ell) for ell in labels]
+
+        model_file = path.join(self.basedir, 'model')
+        cache_file = path.join(self.basedir, 'cache')
+        args = [_vw_path,
             '--cache_file', cache_file,
             '--adaptive',
+            '--ect',
+            str(len(names)),
             '--final_regressor', model_file,
             '--ngram', str(self.ngram),
             '--passes', str(self.passes)
-            ],
-            stdin=subprocess.PIPE)
+            ]
+        log.info('Calling {}'.format(' '.join(args)))
+        proc = subprocess.Popen(args, stdin=subprocess.PIPE)
         for mid,ell in zip(mids,labels):
             message = models.Message.load_by_mid(mid, create_session)
-            _output_message(proc.stdin, message, (1 if ell else -1))
+            _output_message(proc.stdin, message, ell + 1)
         proc.stdin.close()
         proc.wait()
-        return VWModel(cache_file, model_file)
+        return VWModel(cache_file, model_file, names)

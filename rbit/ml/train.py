@@ -8,7 +8,6 @@ from rbit import config
 from rbit.backend import call_create_session
 from rbit.tools import callonce
 
-from rbit.ml.multi import multi_tree_learner
 from rbit.ml.vw_learner import VWLearner
 
 def _maybemkdir(dir):
@@ -45,7 +44,7 @@ def retrain_folder_model(create_session=None):
             filter(models.Message.folder != u'INBOX'). \
             filter(models.Message.folder != u'INBOX.Sent'). \
             all()
-    learner = multi_tree_learner(VWLearner(_basedir))
+    learner = VWLearner(_basedir)
     if len(ms) > 0:
         from time import time
         # The reason for the shuffle is to improve the learning
