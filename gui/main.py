@@ -10,6 +10,10 @@ from rbit import imap
 from RBitMain import RBitMain
 from ConfigDialog import config_dialog
 
+import logging
+root = logging.getLogger()
+root.level = logging.INFO
+
 def main(argv):
     from rbglobals import cfg
     app = QApplication(argv)
