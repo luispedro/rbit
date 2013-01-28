@@ -50,6 +50,18 @@ def _output_message(output, message, label):
                 _as_features(html2text(message.body)),
                 ))
 
+def _parse_label(s):
+    s = s.strip()
+    best = -1
+    best_val = float('-inf')
+    for tok in s.split(' '):
+        e,val = tok.split(':')
+        val = float(val)
+        if val > best_val:
+            best = int(e)
+            best_val = val
+    return best,best_val
+
 class VWModel(object):
     def __init__(self, cache_file, model_file, names):
         self.cache_file = cache_file
@@ -69,10 +81,8 @@ class VWModel(object):
         _output_message(proc.stdin, message, 1)
 
         proc.stdin.close()
-        res = proc.stdout.read()
-        label,strength = res.strip().split(':')
-        label = int(label)
-        return float(strength), self.names[label-1]
+        label,strength = _parse_label(proc.stdout.read())
+        return strength, self.names[label-1]
 
 
 class VWLearner(object):
