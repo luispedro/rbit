@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
+# Copyright (C) 2012-2013 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 
 from PySide.QtGui import QApplication, QMainWindow, QListView
@@ -10,11 +10,11 @@ from rbit import imap
 from RBitMain import RBitMain
 from ConfigDialog import config_dialog
 
-import logging
-root = logging.getLogger()
-root.level = logging.INFO
-
 def main(argv):
+    import logging
+    root = logging.getLogger()
+    root.level = logging.INFO
+
     from rbglobals import cfg
     app = QApplication(argv)
     main = RBitMain(app)
