@@ -188,8 +188,8 @@ class ReindexMessages(RBitTask):
             messages = [Message.load_by_mid(m, create_session=(lambda:session)) for m in ms]
             rbglobals.index.add(messages)
             session.expunge_all()
+            sleep()
             if self.dead:
                 break
-            sleep()
         self.status.emit('Message reindexing complete')
 
