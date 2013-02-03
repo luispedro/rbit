@@ -12,8 +12,7 @@ from ConfigDialog import config_dialog
 
 def main(argv):
     import logging
-    root = logging.getLogger()
-    root.level = logging.INFO
+    logging.basicConfig(level=logging.INFO)
 
     from rbglobals import cfg
     app = QApplication(argv)

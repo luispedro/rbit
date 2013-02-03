@@ -138,24 +138,24 @@ class RBitMain(QtCore.QObject):
         q = self.win.searchBox.text()
         self.session = backend.create_session()
         messages = search_messages(q, self.session)
-        self.win.statusBar().showMessage(self.win.tr('Found %s messages') % len(messages))
+        self.win.show_status(self.win.tr('Found {0} messages').format(len(messages)))
         self.set_messagelist(messages)
 
     def check_mail(self):
         if self.in_check_mail:
-            self.win.statusBar().showMessage(self.win.tr("Already checking mail"), 4000)
+            self.show_status(self.win.tr("Already checking mail"), 4000)
             return
 
         self.in_check_mail = True
         update = UpdateMessages(self)
-        update.status.connect(self.win.statusBar().showMessage)
+        update.status.connect(self.show_status)
         @update.done.connect
         def _done():
-            self.win.statusBar().showMessage(self.win.tr("Sync complete"), 4000)
+            self.show_status(self.win.tr("Sync complete"), 4000)
             self.in_check_mail = False
         @update.error.connect
         def _err(err):
-            self.win.statusBar().showMessage(self.win.tr("Error in sync: %s") % err, 4000)
+            self.show_status(self.win.tr("Error in sync: {0}").format(err), 4000)
             self.in_check_mail = False
 
         @signals.register_dec(signals.FOLDER_UPDATE)
@@ -184,7 +184,7 @@ class RBitMain(QtCore.QObject):
         if action == 'auto-move':
             target = messages.folder_prediction(self.active_message)
             if target is None:
-                self.win.statusBar().showMessage(tr("Could not auto-move message"), 4000)
+                self.show_status(tr("Could not auto-move message"), 4000)
                 return
             task = MoveMessage(self, self.active_message, target)
         elif action == 'move':
@@ -196,7 +196,7 @@ class RBitMain(QtCore.QObject):
         idx = ml.currentIndex()
         model.remove_message(self.active_message)
         task.error.connect(lambda err: \
-                            self.win.statusBar().showMessage(tr("Error in %s action: %s") % (tr(action),err), 4000))
+                            self.show_status(tr("Error in {0} action: {1}").format(tr(action),err), 4000))
         self.worker.spawn(task.perform)
         self.active_message = None
         self.update_active_message(idx)
@@ -210,9 +210,11 @@ class RBitMain(QtCore.QObject):
         tr = self.win.tr
         task = ReindexMessages(self)
         task.error.connect(lambda err: \
-                            self.win.statusBar().showMessage(tr("Error in reindexing messages: {0}.").format(err), 4000))
+                            self.show_status(tr("Error in reindexing messages: {0}.").format(err), 4000))
         task.progress.connect(lambda sofar,total:
-                            self.win.statusBar().showMessage(tr("Reindexing ({0:,} of {1:,} done).").format(sofar,total), 16000))
+                            self.show_status(tr("Reindexing ({0:,} of {1:,} done).").format(sofar,total), 16000))
+        task.done.connect(lambda:
+                            self.show_status(tr('Reindexing complete.'), 4000))
         self.aboutToQuit.connect(task.schedule_death)
         self.worker.spawn(task.perform)
 
@@ -221,7 +223,7 @@ class RBitMain(QtCore.QObject):
         task = RetrainFolderModel(self)
         tr = self.win.tr
         task.error.connect(lambda err: \
-                            self.win.statusBar().showMessage(tr("Error in retraining folder model {0}.").format(err), 4000))
+                            self.show_status(tr("Error in retraining folder model {0}.").format(err), 4000))
         self.worker.spawn(task.perform)
 
     def repredict_auto_move(self):
@@ -232,8 +234,14 @@ class RBitMain(QtCore.QObject):
         task = PredictMessages(self, self.account, uids)
         tr = self.win.tr
         task.error.connect(lambda err: \
-                            self.win.statusBar().showMessage(tr("Error in prediction {0}.").format(err), 4000))
+                            self.show_status(tr("Error in prediction {0}.").format(err), 4000))
         self.worker.spawn(task.perform)
+
+    def show_status(self, m, timeout=0):
+        import logging
+        logging = logging.getLogger('status')
+        logging.info(m)
+        self.win.statusBar().showMessage(m, timeout)
 
     @QtCore.Slot(QtGui.QListWidgetItem)
     def attachment_open(self, item):
