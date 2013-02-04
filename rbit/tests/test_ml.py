@@ -18,16 +18,3 @@ def test_as_features():
     assert 'a' != _as_features('a')
 
 
-def test_parse_label():
-    from rbit.ml.vw_learner import _parse_label
-    val, s = _parse_label('1:0 2:1 3:0')
-    assert val == 2
-    assert s == 1
-
-    val, s = _parse_label('1:0 2:1 3:2')
-    assert val == 3
-    assert s == 2
-
-    val, s = _parse_label('1:0 2:1 3:2\n')
-    assert val == 3
-    assert s == 2

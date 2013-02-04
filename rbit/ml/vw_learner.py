@@ -52,15 +52,7 @@ def _output_message(output, message, label):
 
 def _parse_label(s):
     s = s.strip()
-    best = -1
-    best_val = float('-inf')
-    for tok in s.split(' '):
-        e,val = tok.split(':')
-        val = float(val)
-        if val > best_val:
-            best = int(e)
-            best_val = val
-    return best,best_val
+    return int(float(s)), 1.0
 
 class VWModel(object):
     def __init__(self, cache_file, model_file, names):
@@ -72,7 +64,8 @@ class VWModel(object):
         args = [_vw_path,
             '-t',
             '--initial_regressor', self.model_file,
-            '-r', '/dev/stdout',
+            '-p', '/dev/stdout',
+            '--quiet',
             ]
         log.info('Executing {}'.format(' '.join(args)))
         proc = subprocess.Popen(args,
