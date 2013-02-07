@@ -71,7 +71,7 @@ class MessageListItem(QtGui.QItemDelegate):
         predictions = ""
         for p in m.predictions:
             if p.type == 'folder':
-                predictions = '     -> {0.value} {0.strength:.2}'.format(p)
+                predictions = '     -> {0.value}'.format(p)
                 break
 
         if option.state & QtGui.QStyle.State_MouseOver:
