@@ -138,7 +138,7 @@ class RBitMain(QtCore.QObject):
         q = self.win.searchBox.text()
         self.session = backend.create_session()
         messages = search_messages(q, self.session)
-        self.win.show_status(self.win.tr('Found {0} messages').format(len(messages)))
+        self.show_status(self.win.tr('Found {0} messages').format(len(messages)))
         self.set_messagelist(messages)
 
     def check_mail(self):
