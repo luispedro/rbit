@@ -16,12 +16,17 @@ Dependencies
 Just copy and paste the commands below to install all dependencies (you must
 have ``pip`` installed, but you already did that, right?)::
 
+    sudo apt-get install python-pyside
+    sudo apt-get install python-sqlalchemy
+    sudo apt-get install python-gevent
+
     pip install sqlalchemy
     pip install imapclient
     pip install gevent
     pip install whoosh
     pip install pyzmail
     pip install six
+
 
 Vowpal wabbit
 ~~~~~~~~~~~~~
