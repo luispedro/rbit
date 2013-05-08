@@ -17,4 +17,7 @@ def test_as_features():
     from rbit.ml.vw_learner import _as_features
     assert 'a' != _as_features('a')
 
-
+def test_break_up_email():
+    import rbit.ml.vw_learner
+    broken = rbit.ml.vw_learner._break_up_email('Me <luis@luispedro.org>')
+    assert 'luispedro' in broken

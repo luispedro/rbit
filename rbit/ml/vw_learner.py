@@ -39,12 +39,23 @@ def _formatted_headers(headers):
         res.append(v)
     return _as_features(u" ".join(res))
 
+def _break_up_email(email):
+    from email.utils import parseaddr
+    _,email = parseaddr(email)
+    username,host = email.split('@')
+    host_parts = host.split('.')
+    return u" ".join(['email:{}'.format(email),
+                    'useremail:{}'.format(username),
+                    'host:{}'.format(host)] +
+                   ['hostpart:{}'.format(hp) for hp in host_parts])
+
 def _output_message(output, message, label):
     from rbit.html2text import html2text
-    output.write('{0} |subject {1} |from {2} |to {3} |headers {4}|body {5}\n'.format(
+    output.write('{0} |subject {1} |from {2} |fromemail {3} |to {4} |headers {5}|body {6}\n'.format(
                 label,
                 _as_features(message.subject),
                 _as_features(message.from_),
+                _as_features(_break_up_email(message.from_)),
                 _as_features(message.recipients),
                 _formatted_headers(message.headers),
                 _as_features(html2text(message.body)),
