@@ -42,6 +42,8 @@ def _formatted_headers(headers):
 def _break_up_email(email):
     from email.utils import parseaddr
     _,email = parseaddr(email)
+    if email == '':
+        email = '@'
     username,host = email.split('@')
     host_parts = host.split('.')
     return u" ".join(['email:{}'.format(email),
