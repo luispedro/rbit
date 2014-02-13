@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Luis Pedro Coelho <luis@luispedro.org>
+# Copyright (C) 2012-2014 Luis Pedro Coelho <luis@luispedro.org>
 # This file is part of rbit mail.
 import email
 from rbit import backend
@@ -187,6 +187,8 @@ def update_folder(client, folder, create_session=None):
             pass
 
         session.delete(m)
+        if len(session.dirty) > 128:
+            session.commit()
     session.commit()
 
     new = messages - current
