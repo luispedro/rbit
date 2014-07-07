@@ -2,6 +2,8 @@
 # This file is part of rbit mail.
 
 import imapclient
+import logging
+logger = logging
 
 def breakup(seq, n):
     if not (n > 0):
@@ -36,6 +38,7 @@ class IMAPClient(object):
         pass
 
     def _select_folder(self, folder):
+        logger.info('Folder switch to {}'.format(folder))
         if folder is None:
             return
         if self.folder != folder:
@@ -53,6 +56,7 @@ class IMAPClient(object):
         return self.connection.fetch('1:*', ['FLAGS'], ['CHANGEDSINCE %s' % modseq])
 
     def list_messages(self, folder=None):
+        logger.info('List messages.')
         self._select_folder(folder)
         return self.connection.search()
 
@@ -81,10 +85,12 @@ class IMAPClient(object):
         self.move_messages(uids, trash_folder)
 
     def move_messages(self, uids, destination_folder):
+        logger.info('Move messages {} to {}.'.format(uids, destination_folder))
         self.connection.copy(uids, destination_folder)
         return self.connection.delete_messages(uids)
 
     def expunge(self):
+        logger.info('Expunge')
         self.connection.expunge()
 
     def list_all_folders(self):
@@ -94,6 +100,7 @@ class IMAPClient(object):
 
         Generate all folders on the server
         '''
+        logger.info('List all folders')
         self._select_folder('INBOX')
         yield 'INBOX'
         for _,_,f in self.connection.list_sub_folders():
